@@ -85,6 +85,8 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateTurretCommand());
+        driverController.leftTrigger().whileTrue(turret.getTurretPIDCommand(() -> 180));
+        driverController.a().whileTrue(Commands.run(() -> turret.manualTurret(3), turret));
     }
 
     private void configureOperatorControls() {

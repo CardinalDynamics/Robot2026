@@ -1,15 +1,29 @@
 package frc.robot.subsystems.Turret;
 
+import static edu.wpi.first.units.Units.Volts;
+
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.sim.ChassisReference;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -20,7 +34,15 @@ public class TurretSubsystem extends SubsystemBase {
     TalonFX turretMotor;
     VelocityVoltage voltageRequest;
     TalonFXConfiguration motorConfig;
-    MotionMagicTorqueCurrentFOC motionMagicRequest = new MotionMagicTorqueCurrentFOC(0);
+    MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0);
+
+    private final DCMotorSim m_motorSimModel = new DCMotorSim(
+    LinearSystemId.createDCMotorSystem(
+        DCMotor.getKrakenX44Foc(1), 0.001, TurretConstants.gearRatio
+    ),
+    DCMotor.getKrakenX44Foc(1)
+    );
+
     
     public TurretSubsystem() {
         turretMotor = new TalonFX(TurretConstants.turretMotorCANID, Constants.canivoreBus);
@@ -42,6 +64,11 @@ public class TurretSubsystem extends SubsystemBase {
         // apply config
         turretMotor.getConfigurator().apply(motorConfig);
 
+        // set some sim settings
+        var turretMotorSim = turretMotor.getSimState();
+        turretMotorSim.Orientation = ChassisReference.CounterClockwise_Positive;
+        turretMotorSim.setMotorType(TalonFXSimState.MotorType.KrakenX44);
+
         // set offset for turret
         turretMotor.setPosition(TurretConstants.turretOffset);
     }
@@ -52,12 +79,12 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     public void manualTurret(double input) {
-        turretMotor.setControl(voltageRequest.withVelocity(input));
+        turretMotor.setVoltage(3);
     }
 
     // use motion magic to move the turret to desired angle
-    public Command getTurretPIDCommand(double degrees) {
-        return run(() -> turretMotor.setControl(motionMagicRequest.withPosition(degrees * TurretConstants.gearRatio / 360.0)));
+    public Command getTurretPIDCommand(DoubleSupplier degrees) {
+        return run(() -> turretMotor.setControl(motionMagicRequest.withPosition(degrees.getAsDouble() * TurretConstants.gearRatio / 360.0)));
     }
 
     // convert angles in (0, 360) to (-180, 180)
@@ -79,10 +106,37 @@ public class TurretSubsystem extends SubsystemBase {
 
     // get the desired shot angle based on the position of the robot
     // then translates to the turret angle needed to achieve the shot angle based on the rotation of the robot
-    public double getDesiredTurretAngle(Pose2d targetPose, Pose2d drivePose) {
-        Rotation2d desiredShotAngle = Rotation2d.fromRadians(Math.atan2(targetPose.getY() - drivePose.getY(),
-            targetPose.getX() - drivePose.getX()));
-        double turretAngleDegrees = desiredShotAngle.getDegrees() - drivePose.getRotation().getDegrees();
-        return turretAngleDegrees;
+    public DoubleSupplier getDesiredTurretAngle(Supplier<Pose2d> targetPose, Supplier<Pose2d> drivePose) {
+        return () -> {
+            Rotation2d desiredShotAngle = Rotation2d.fromRadians(Math.atan2(targetPose.get().getY() - drivePose.get().getY(),
+            targetPose.get().getX() - drivePose.get().getX()));
+            return (desiredShotAngle.getDegrees() - drivePose.get().getRotation().getDegrees());
+        };
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        var talonFXSim = turretMotor.getSimState();
+
+        // set the supply voltage of the TalonFX
+        talonFXSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+
+        // get the motor voltage of the TalonFX
+        var motorVoltage = talonFXSim.getMotorVoltageMeasure();
+
+        // use the motor voltage to calculate new position and velocity
+        // using WPILib's DCMotorSim class for physics simulation
+        m_motorSimModel.setInputVoltage(motorVoltage.in(Volts));
+        m_motorSimModel.update(0.020); // assume 20 ms loop time
+
+        // apply the new rotor position and velocity to the TalonFX;
+        // note that this is rotor position/velocity (before gear ratio), but
+        // DCMotorSim returns mechanism position/velocity (after gear ratio)
+        talonFXSim.setRawRotorPosition(m_motorSimModel.getAngularPosition().times(TurretConstants.gearRatio));
+        talonFXSim.setRotorVelocity(m_motorSimModel.getAngularVelocity().times(TurretConstants.gearRatio));
+
+        SmartDashboard.putNumber(
+            "Turret Motor Volts",
+            turretMotor.getSimState().getMotorVoltageMeasure().in(Volts));
     }
 }

@@ -18,7 +18,7 @@ public class AutoAim {
     }
 
     public Command generateTurretCommand() {
-        return Commands.defer(() -> turret.getTurretPIDCommand(turret.getDesiredTurretAngle(Constants.hubPose, drivetrain.getPose())), Set.of());
+        return Commands.defer(() -> turret.getTurretPIDCommand(turret.getDesiredTurretAngle(() -> Constants.hubPose, drivetrain::getPose)), Set.of());
     }
     
 }
