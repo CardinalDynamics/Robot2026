@@ -12,4 +12,10 @@ public final class Constants {
     // TODO further tune this and get for both alliances
     public static final Pose2d hubPose = new Pose2d(4.5, 3.9, new Rotation2d());
 
+    // TODO tune this and get for both alliances
+    public static final Pose2d passTarget = new Pose2d(0, 0, new Rotation2d());
+
+    // TODO tune this and get for both alliances
+    public static final double allianceZoneCutoffMeters = 4.5;
+
 }

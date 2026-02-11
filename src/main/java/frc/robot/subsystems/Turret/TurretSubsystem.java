@@ -110,6 +110,7 @@ public class TurretSubsystem extends SubsystemBase {
         return () -> {
             Rotation2d desiredShotAngle = Rotation2d.fromRadians(Math.atan2(targetPose.get().getY() - drivePose.get().getY(),
             targetPose.get().getX() - drivePose.get().getX()));
+            SmartDashboard.putNumber("shot angle", desiredShotAngle.getDegrees());
             return (desiredShotAngle.getDegrees() - drivePose.get().getRotation().getDegrees());
         };
     }

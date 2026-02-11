@@ -44,8 +44,13 @@ public class RobotContainer {
     public final AutoAim autoAimCommandFactory = new AutoAim(drivetrain, turret);
 
     public RobotContainer() {
+        configureDefaultCommands();
         configureDriverControls();
         configureOperatorControls();
+    }
+
+    public void configureDefaultCommands() {
+        turret.setDefaultCommand(autoAimCommandFactory.generateTurretIdleCommand());
     }
 
     private void configureDriverControls() {
