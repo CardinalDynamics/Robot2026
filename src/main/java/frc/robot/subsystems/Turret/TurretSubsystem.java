@@ -32,7 +32,7 @@ import frc.robot.Constants;
 public class TurretSubsystem extends SubsystemBase {
 
     TalonFX turretMotor;
-    VelocityVoltage voltageRequest;
+    VelocityVoltage voltageRequest = new VelocityVoltage(0);
     TalonFXConfiguration motorConfig;
     MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0);
 
@@ -46,7 +46,6 @@ public class TurretSubsystem extends SubsystemBase {
     
     public TurretSubsystem() {
         turretMotor = new TalonFX(TurretConstants.turretMotorCANID, Constants.canivoreBus);
-        voltageRequest = new VelocityVoltage(0);
 
         // Config settings for the x44
         motorConfig = new TalonFXConfiguration();

@@ -1,9 +1,12 @@
-package frc.robot.subsystems.Turret;
+package frc.robot.subsystems.Hood;
 
-public final class TurretConstants {
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
-    // TODO set this CAN ID
-    public static final int turretMotorCANID = 51;
+public final class HoodConstants {
+
+    public static final int hoodMotorCANID = 52;
+
+    public static final double gearRatio = 1;
 
     // TODO tune these constants
     public static final double kP = .5;
@@ -17,13 +20,10 @@ public final class TurretConstants {
     public static final double MotionMagicCruiseVelocity = 10;
     public static final double MotionMagicAcceleration = 10;
 
-    // TODO find this gear ratio
-    public static final double gearRatio = 1;
+    // TODO find this offset
+    public static final double hoodOffset = 15;
 
     // TODO find these limits
-    public static final double clockwiseTurretLimitDegrees = 340;
-    public static final double counterclockwiseTurretLimitDegrees = -340;
-
-    // TODO find this offset
-    public static final double turretOffset = 0;
+    public static final double hoodMaxLimit = 72;
+    public static final double hoodMinLimit = 15;
 }

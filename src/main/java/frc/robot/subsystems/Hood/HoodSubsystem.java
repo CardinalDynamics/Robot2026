@@ -1,0 +1,139 @@
+package frc.robot.subsystems.Hood;
+
+import static edu.wpi.first.units.Units.Volts;
+
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.sim.ChassisReference;
+import com.ctre.phoenix6.sim.TalonFXSimState;
+
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+
+@Logged
+public class HoodSubsystem extends SubsystemBase {
+
+    TalonFX hoodMotor;
+    TalonFXConfiguration motorConfig;
+    MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0);
+
+    private final DCMotorSim m_motorSimModel = new DCMotorSim(
+    LinearSystemId.createDCMotorSystem(
+        DCMotor.getKrakenX44Foc(1), 0.001, HoodConstants.gearRatio
+    ),
+    DCMotor.getKrakenX44Foc(1)
+    );
+
+    // Outputs dependent varaible hood angle for independent distance from goal
+    public final InterpolatingDoubleTreeMap hoodTable = new InterpolatingDoubleTreeMap();
+    
+    public HoodSubsystem() {
+        hoodMotor = new TalonFX(HoodConstants.hoodMotorCANID, Constants.canivoreBus);
+
+        // Config settings for the x44
+        motorConfig = new TalonFXConfiguration();
+        motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        Slot0Configs slot0 = motorConfig.Slot0;
+        slot0.kP = HoodConstants.kP;
+        slot0.kI = HoodConstants.kI;
+        slot0.kD = HoodConstants.kD;
+        slot0.kS = HoodConstants.kS;
+        slot0.kV = HoodConstants.kV;
+        slot0.kA = HoodConstants.kA;
+        motorConfig.MotionMagic.MotionMagicCruiseVelocity = HoodConstants.MotionMagicCruiseVelocity;
+        motorConfig.MotionMagic.MotionMagicAcceleration = HoodConstants.MotionMagicAcceleration;
+
+        // apply config
+        hoodMotor.getConfigurator().apply(motorConfig);
+
+        // set some sim settings
+        var hoodMotorSim = hoodMotor.getSimState();
+        hoodMotorSim.Orientation = ChassisReference.CounterClockwise_Positive;
+        hoodMotorSim.setMotorType(TalonFXSimState.MotorType.KrakenX44);
+
+        // set offset for hood
+        hoodMotor.setPosition(HoodConstants.hoodOffset);
+
+        loadHoodTable();
+    }
+
+    // Hood angle in meters/degrees
+    private void loadHoodTable() {
+        hoodTable.put(0.5, 15.0);
+        hoodTable.put(7.0, 70.0);
+
+    }
+
+    public double getHoodTableOutput(double distance) {
+        double output = hoodTable.get(distance);
+        if (distance > 7.0) {
+            output = 70;
+        }
+        return MathUtil.clamp(output, HoodConstants.hoodMinLimit, HoodConstants.hoodMaxLimit);
+    }
+
+    
+    // get the position of the hood in degrees
+    public double getHoodDegrees() {
+        return hoodMotor.getPosition().getValueAsDouble() * 360.0 / HoodConstants.gearRatio;
+    }
+
+    // use motion magic to move the hood to desired angle
+    public Command getHoodPIDCommand(DoubleSupplier degrees) {
+        return run(() -> hoodMotor.setControl(motionMagicRequest.withPosition(degrees.getAsDouble() * HoodConstants.gearRatio / 360.0)));
+    }
+
+    // get the desired shot angle based on the position of the robot
+    // clamped to hard stops
+    public DoubleSupplier getDesiredHoodAngle(Supplier<Pose2d> targetPose, Supplier<Pose2d> drivePose) {
+        return () -> {
+            double distance = drivePose.get().getTranslation().getDistance(targetPose.get().getTranslation());
+            return getHoodTableOutput(distance);
+        };
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        var talonFXSim = hoodMotor.getSimState();
+
+        // set the supply voltage of the TalonFX
+        talonFXSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+
+        // get the motor voltage of the TalonFX
+        var motorVoltage = talonFXSim.getMotorVoltageMeasure();
+
+        // use the motor voltage to calculate new position and velocity
+        // using WPILib's DCMotorSim class for physics simulation
+        m_motorSimModel.setInputVoltage(motorVoltage.in(Volts));
+        m_motorSimModel.update(0.020); // assume 20 ms loop time
+
+        // apply the new rotor position and velocity to the TalonFX;
+        // note that this is rotor position/velocity (before gear ratio), but
+        // DCMotorSim returns mechanism position/velocity (after gear ratio)
+        talonFXSim.setRawRotorPosition(m_motorSimModel.getAngularPosition().times(HoodConstants.gearRatio));
+        talonFXSim.setRotorVelocity(m_motorSimModel.getAngularVelocity().times(HoodConstants.gearRatio));
+
+        SmartDashboard.putNumber(
+            "Hood Motor Volts",
+            hoodMotor.getSimState().getMotorVoltageMeasure().in(Volts));
+    }
+
+}

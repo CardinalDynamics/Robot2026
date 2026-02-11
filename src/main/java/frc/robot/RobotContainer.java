@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Drive.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Hood.HoodSubsystem;
 import frc.robot.subsystems.Turret.TurretSubsystem;
 
 @Logged
@@ -40,17 +41,14 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final TurretSubsystem turret = new TurretSubsystem();
+    public final HoodSubsystem hood = new HoodSubsystem();
 
-    public final AutoAim autoAimCommandFactory = new AutoAim(drivetrain, turret);
+    public final AutoAim autoAimCommandFactory = new AutoAim(drivetrain, turret, hood);
 
     public RobotContainer() {
-        configureDefaultCommands();
         configureDriverControls();
         configureOperatorControls();
-    }
-
-    public void configureDefaultCommands() {
-        turret.setDefaultCommand(autoAimCommandFactory.generateTurretIdleCommand());
+        configureDefaultCommands();
     }
 
     private void configureDriverControls() {
@@ -90,11 +88,17 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateTurretCommand());
+        driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateHoodCommand());
         driverController.leftTrigger().whileTrue(turret.getTurretPIDCommand(() -> 180));
         driverController.a().whileTrue(Commands.run(() -> turret.manualTurret(3), turret));
     }
 
     private void configureOperatorControls() {
+    }
+
+    public void configureDefaultCommands() {
+        turret.setDefaultCommand(autoAimCommandFactory.generateTurretIdleCommand());
+        hood.setDefaultCommand(autoAimCommandFactory.generateHoodIdleCommand());
     }
 
     public Command getAutonomousCommand() {
