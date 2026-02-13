@@ -9,14 +9,13 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 @Logged
 public class IntakeWheelsSubsystem extends SubsystemBase {
     SparkMax wheelMotor;
-    SparkMaxConfig motorConfig = new SparkMaxConfig();;
+    SparkMaxConfig motorConfig = new SparkMaxConfig();
     ProfiledPIDController controller;
 
     public IntakeWheelsSubsystem() {
@@ -29,6 +28,10 @@ public class IntakeWheelsSubsystem extends SubsystemBase {
 
     public double getIntakeWheelRPM() {
         return wheelMotor.getEncoder().getVelocity() / IntakeConstants.wheelGearRatio;
+    }
+
+    public double getControllerSetpoint() {
+        return controller.getSetpoint().position;
     }
 
     public void useIntakeWheelPID(double rpm) {

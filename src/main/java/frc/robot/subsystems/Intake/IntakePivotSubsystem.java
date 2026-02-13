@@ -2,9 +2,6 @@ package frc.robot.subsystems.Intake;
 
 import static edu.wpi.first.units.Units.Volts;
 
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;

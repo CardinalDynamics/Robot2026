@@ -42,7 +42,7 @@ public class ShooterSubsystem extends SubsystemBase {
     
     public ShooterSubsystem() {
         shooterMotorLeft = new TalonFX(ShooterConstants.shooterMotorLeftCANID, Constants.canivoreBus);
-        shooterMotorLeft = new TalonFX(ShooterConstants.shooterMotorRightCANID, Constants.canivoreBus);
+        shooterMotorRight = new TalonFX(ShooterConstants.shooterMotorRightCANID, Constants.canivoreBus);
 
         // Config settings for the x60
         motorConfigLeft = new TalonFXConfiguration();

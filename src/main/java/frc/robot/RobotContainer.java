@@ -95,7 +95,7 @@ public class RobotContainer {
         driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // Reset the field-centric heading on left bumper press.
-        driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        driverController.povUp().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -114,14 +114,16 @@ public class RobotContainer {
         operatorController.povDown().whileTrue(Commands.run(() -> climber.useClimberPID(ClimberConstants.climbedPosition), climber));
         operatorController.rightTrigger().whileTrue(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotStowPosiion), pivot));
         operatorController.leftTrigger().whileTrue(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotDeployPosition), pivot));
+        operatorController.rightBumper().whileTrue(Commands.run(() -> wheels.useIntakeWheelPID(IntakeConstants.IntakeSpeed), wheels));
+        operatorController.leftBumper().whileTrue(Commands.run(() -> wheels.useIntakeWheelPID(-IntakeConstants.IntakeSpeed * .5), wheels));
     }
 
     public void configureDefaultCommands() {
         turret.setDefaultCommand(autoAimCommandFactory.generateTurretIdleCommand());
         hood.setDefaultCommand(autoAimCommandFactory.generateHoodIdleCommand());
         shooter.setDefaultCommand(shooter.getShooterPIDCommand(() -> ShooterConstants.shooterIdleRPM));
-        climber.setDefaultCommand(Commands.run(() -> climber.setClimberVelocity(0)));
-        pivot.setDefaultCommand(Commands.run(() -> pivot.setPivotVelocity(0)));
+        climber.setDefaultCommand(Commands.run(() -> climber.setClimberVelocity(0), climber));
+        pivot.setDefaultCommand(Commands.run(() -> pivot.setPivotVelocity(0), pivot));
         wheels.setDefaultCommand(Commands.run(() -> wheels.useIntakeWheelPID(0), wheels));
     }
 
