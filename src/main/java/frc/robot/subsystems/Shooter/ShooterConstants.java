@@ -3,8 +3,8 @@ package frc.robot.subsystems.Shooter;
 import com.ctre.phoenix6.signals.InvertedValue;
 
 public class ShooterConstants {
-    public static final int shooterMotorLeftCANID = 52;
-    public static final int shooterMotorRightCANID = 53;
+    public static final int shooterMotorLeftCANID = 53;
+    public static final int shooterMotorRightCANID = 54;
 
     public static final InvertedValue shooterMotorLeftInvertedValue = InvertedValue.Clockwise_Positive;
     public static final InvertedValue shooterMotorRightInvertedValue = InvertedValue.CounterClockwise_Positive;

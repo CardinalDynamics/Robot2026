@@ -6,5 +6,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 
 
 public class DriveConstants {
+
+    // TODO find this
     public static final Transform2d shooterOffset = new Transform2d(new Translation2d(0.0, 0.0), new Rotation2d());
 }
