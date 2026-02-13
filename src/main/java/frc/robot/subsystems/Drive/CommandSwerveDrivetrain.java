@@ -204,6 +204,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return getState().Pose;
     }
 
+    public Pose2d getShooterPose() {
+        return getPose().transformBy(DriveConstants.shooterOffset);
+    }
+
     public Supplier<Pose2d> getAssumedTarget() {
         return () -> {
             Pose2d target = Constants.hubPose;

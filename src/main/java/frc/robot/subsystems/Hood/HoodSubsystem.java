@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Utility.ShooterParameters;
 
 @Logged
 public class HoodSubsystem extends SubsystemBase {
@@ -41,9 +42,6 @@ public class HoodSubsystem extends SubsystemBase {
     ),
     DCMotor.getKrakenX44Foc(1)
     );
-
-    // Outputs dependent varaible hood angle for independent distance from goal
-    public final InterpolatingDoubleTreeMap hoodTable = new InterpolatingDoubleTreeMap();
     
     public HoodSubsystem() {
         hoodMotor = new TalonFX(HoodConstants.hoodMotorCANID, Constants.canivoreBus);
@@ -71,25 +69,7 @@ public class HoodSubsystem extends SubsystemBase {
 
         // set offset for hood
         hoodMotor.setPosition(HoodConstants.hoodOffset);
-
-        loadHoodTable();
     }
-
-    // Hood angle in meters/degrees
-    private void loadHoodTable() {
-        hoodTable.put(0.5, 15.0);
-        hoodTable.put(7.0, 70.0);
-
-    }
-
-    public double getHoodTableOutput(double distance) {
-        double output = hoodTable.get(distance);
-        if (distance > 7.0) {
-            output = 70;
-        }
-        return MathUtil.clamp(output, HoodConstants.hoodMinLimit, HoodConstants.hoodMaxLimit);
-    }
-
     
     // get the position of the hood in degrees
     public double getHoodDegrees() {
@@ -98,17 +78,15 @@ public class HoodSubsystem extends SubsystemBase {
 
     // use motion magic to move the hood to desired angle
     public Command getHoodPIDCommand(DoubleSupplier degrees) {
-        return run(() -> hoodMotor.setControl(motionMagicRequest.withPosition(degrees.getAsDouble() * HoodConstants.gearRatio / 360.0)));
+        return run(() -> hoodMotor.setControl(motionMagicRequest.withPosition(
+            MathUtil.clamp(degrees.getAsDouble(), HoodConstants.hoodMinLimit, HoodConstants.hoodMaxLimit) * HoodConstants.gearRatio / 360.0)));
     }
 
-    // get the desired shot angle based on the position of the robot
-    // clamped to hard stops
-    public DoubleSupplier getDesiredHoodAngle(Supplier<Pose2d> targetPose, Supplier<Pose2d> drivePose) {
-        return () -> {
-            double distance = drivePose.get().getTranslation().getDistance(targetPose.get().getTranslation());
-            return getHoodTableOutput(distance);
-        };
+    public Command getHoodPIDCommand(Supplier<ShooterParameters> params) {
+        return run(() -> hoodMotor.setControl(motionMagicRequest.withPosition(
+            MathUtil.clamp(params.get().getHoodAngle(), HoodConstants.hoodMinLimit, HoodConstants.hoodMaxLimit) * HoodConstants.gearRatio / 360.0)));
     }
+    
 
     @Override
     public void simulationPeriodic() {

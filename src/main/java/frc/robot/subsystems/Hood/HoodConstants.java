@@ -24,6 +24,8 @@ public final class HoodConstants {
     public static final double hoodOffset = 15;
 
     // TODO find these limits
-    public static final double hoodMaxLimit = 72;
-    public static final double hoodMinLimit = 15;
+    public static final double hoodMaxLimit = 72.0;
+    public static final double hoodMinLimit = 15.0;
+
+    public static final double hoodStowSetpoint = 20.0;
 }

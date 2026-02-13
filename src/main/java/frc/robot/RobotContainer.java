@@ -19,7 +19,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Drive.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Hood.HoodConstants;
 import frc.robot.subsystems.Hood.HoodSubsystem;
+import frc.robot.subsystems.Shooter.ShooterConstants;
+import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.subsystems.Turret.TurretSubsystem;
 
 @Logged
@@ -42,8 +45,9 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final TurretSubsystem turret = new TurretSubsystem();
     public final HoodSubsystem hood = new HoodSubsystem();
+    public final ShooterSubsystem shooter = new ShooterSubsystem();
 
-    public final AutoAim autoAimCommandFactory = new AutoAim(drivetrain, turret, hood);
+    public final AutoAim autoAimCommandFactory = new AutoAim(drivetrain, turret, hood, shooter);
 
     public RobotContainer() {
         configureDriverControls();
@@ -87,18 +91,22 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateTurretCommand());
-        driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateHoodCommand());
+        driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateTurretScoreCommand());
+        driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateHoodScoreCommand());
+        driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateAssumedShooterCommand());
+
         driverController.leftTrigger().whileTrue(turret.getTurretPIDCommand(() -> 180));
         driverController.a().whileTrue(Commands.run(() -> turret.manualTurret(3), turret));
     }
 
     private void configureOperatorControls() {
+        operatorController.a().whileTrue(hood.getHoodPIDCommand(() -> HoodConstants.hoodStowSetpoint));
     }
 
     public void configureDefaultCommands() {
         turret.setDefaultCommand(autoAimCommandFactory.generateTurretIdleCommand());
         hood.setDefaultCommand(autoAimCommandFactory.generateHoodIdleCommand());
+        shooter.setDefaultCommand(shooter.getShooterPIDCommand(() -> ShooterConstants.shooterIdleRPM));
     }
 
     public Command getAutonomousCommand() {
