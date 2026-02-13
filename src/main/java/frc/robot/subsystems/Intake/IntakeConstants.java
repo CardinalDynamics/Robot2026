@@ -23,5 +23,13 @@ public class IntakeConstants {
 
     public static final double pivotStowPosiion = 0;
     public static final double pivotDeployPosition = 90;
+
+    public static final double kWheelP = .5;
+    public static final double kWheelI = 0;
+    public static final double kWheelD = 0;
+    public static final double IntakeWheelMaxAcceleration = 10;
+    public static final double IntakeWheelMaxVelocity = 10;
+
+    public static final double IntakeSpeed = 1000;
     
 }

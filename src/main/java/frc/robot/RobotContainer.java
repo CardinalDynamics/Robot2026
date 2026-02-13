@@ -25,6 +25,7 @@ import frc.robot.subsystems.Hood.HoodConstants;
 import frc.robot.subsystems.Hood.HoodSubsystem;
 import frc.robot.subsystems.Intake.IntakeConstants;
 import frc.robot.subsystems.Intake.IntakePivotSubsystem;
+import frc.robot.subsystems.Intake.IntakeWheelsSubsystem;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.subsystems.Turret.TurretSubsystem;
@@ -52,6 +53,7 @@ public class RobotContainer {
     public final ShooterSubsystem shooter = new ShooterSubsystem();
     public final ClimberSubsystem climber = new ClimberSubsystem();
     public final IntakePivotSubsystem pivot = new IntakePivotSubsystem();
+    public final IntakeWheelsSubsystem wheels = new IntakeWheelsSubsystem();
 
     public final AutoAim autoAimCommandFactory = new AutoAim(drivetrain, turret, hood, shooter);
 
@@ -101,9 +103,7 @@ public class RobotContainer {
         driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateHoodScoreCommand());
         driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateAssumedShooterCommand());
 
-        driverController.leftTrigger().whileTrue(turret.getTurretPIDCommand(() -> 180));
-        driverController.a().whileTrue(Commands.run(() -> turret.manualTurret(3), turret));
-
+        driverController.leftTrigger().whileTrue(Commands.run(() -> wheels.useIntakeWheelPID(IntakeConstants.IntakeSpeed), wheels));
         driverController.leftTrigger().whileTrue(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotDeployPosition), pivot));
     }
 
@@ -122,6 +122,7 @@ public class RobotContainer {
         shooter.setDefaultCommand(shooter.getShooterPIDCommand(() -> ShooterConstants.shooterIdleRPM));
         climber.setDefaultCommand(Commands.run(() -> climber.setClimberVelocity(0)));
         pivot.setDefaultCommand(Commands.run(() -> pivot.setPivotVelocity(0)));
+        wheels.setDefaultCommand(Commands.run(() -> wheels.useIntakeWheelPID(0), wheels));
     }
 
     public Command getAutonomousCommand() {
