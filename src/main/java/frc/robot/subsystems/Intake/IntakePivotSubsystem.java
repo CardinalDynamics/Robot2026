@@ -7,10 +7,12 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.RobotController;
@@ -20,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Hood.HoodConstants;
 
+@Logged
 public class IntakePivotSubsystem extends SubsystemBase {
 
     TalonFX pivotMotor;
@@ -40,6 +43,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
         // Config settings for the x44
         motorConfig = new TalonFXConfiguration();
         motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         Slot0Configs slot0 = motorConfig.Slot0;
         slot0.kP = IntakeConstants.kPivotP;
         slot0.kI = IntakeConstants.kPivotI;
@@ -73,6 +77,10 @@ public class IntakePivotSubsystem extends SubsystemBase {
 
     public void usePivotPID(double degrees) {
         pivotMotor.setControl(motionMagicRequest.withPosition(degrees * HoodConstants.gearRatio / 360.0));
+    }
+
+    public void setPivotVoltage(double volts) {
+        pivotMotor.setVoltage(volts);
     }
     
     @Override

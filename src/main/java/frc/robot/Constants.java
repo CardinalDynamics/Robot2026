@@ -16,8 +16,11 @@ public final class Constants {
     public static final Pose2d hubPose = new Pose2d(4.5, 3.9, new Rotation2d());
 
     // TODO tune this and get for both alliances
-    public static final Pose2d passTarget = new Pose2d(0, 0, new Rotation2d());
+    public static final Pose2d leftPassTarget = new Pose2d(0, 0, new Rotation2d());
+    public static final Pose2d rightPassTarget = new Pose2d(8.0, 0, new Rotation2d());
 
     // TODO tune this and get for both alliances
     public static final double allianceZoneCutoffMeters = 4.5;
+
+    public static final double latencyCompensation = .1;
 }

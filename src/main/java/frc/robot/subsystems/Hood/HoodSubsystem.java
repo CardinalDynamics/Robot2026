@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Utility.ShooterParameters;
@@ -35,6 +36,7 @@ public class HoodSubsystem extends SubsystemBase {
     TalonFX hoodMotor;
     TalonFXConfiguration motorConfig;
     MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0);
+    double desiredHoodPosition;
 
     private final DCMotorSim m_motorSimModel = new DCMotorSim(
     LinearSystemId.createDCMotorSystem(
@@ -68,23 +70,47 @@ public class HoodSubsystem extends SubsystemBase {
         hoodMotorSim.setMotorType(TalonFXSimState.MotorType.KrakenX44);
 
         // set offset for hood
-        hoodMotor.setPosition(HoodConstants.hoodOffset);
+        hoodMotor.setPosition(0);
+        desiredHoodPosition = getHoodDegrees();
     }
     
     // get the position of the hood in degrees
     public double getHoodDegrees() {
-        return hoodMotor.getPosition().getValueAsDouble() * 360.0 / HoodConstants.gearRatio;
+        return hoodMotor.getPosition().getValueAsDouble() * 360.0 / HoodConstants.gearRatio + HoodConstants.hoodOffset;
+    }
+
+    public double getDesiredHoodDegrees() {
+        return desiredHoodPosition * 360.0 / HoodConstants.gearRatio + HoodConstants.hoodOffset;
+    }
+
+    private void setDesiredHoodAngle(double rotations) {
+        desiredHoodPosition = rotations;
     }
 
     // use motion magic to move the hood to desired angle
     public Command getHoodPIDCommand(DoubleSupplier degrees) {
         return run(() -> hoodMotor.setControl(motionMagicRequest.withPosition(
-            MathUtil.clamp(degrees.getAsDouble(), HoodConstants.hoodMinLimit, HoodConstants.hoodMaxLimit) * HoodConstants.gearRatio / 360.0)));
+            MathUtil.clamp(degrees.getAsDouble(), HoodConstants.hoodMinLimit, HoodConstants.hoodMaxLimit) * HoodConstants.gearRatio / 360.0)))
+            .alongWith(Commands.run(() -> setDesiredHoodAngle(MathUtil.clamp(degrees.getAsDouble(), HoodConstants.hoodMinLimit, HoodConstants.hoodMaxLimit) * HoodConstants.gearRatio / 360.0)));
     }
 
     public Command getHoodPIDCommand(Supplier<ShooterParameters> params) {
-        return run(() -> hoodMotor.setControl(motionMagicRequest.withPosition(
-            MathUtil.clamp(params.get().getHoodAngle(), HoodConstants.hoodMinLimit, HoodConstants.hoodMaxLimit) * HoodConstants.gearRatio / 360.0)));
+        return run(() -> 
+            hoodMotor.setControl(motionMagicRequest.withPosition(
+                MathUtil.clamp(params.get().getHoodAngle(), HoodConstants.hoodMinLimit, HoodConstants.hoodMaxLimit) * HoodConstants.gearRatio / 360.0)))
+                .alongWith(Commands.run(() -> setDesiredHoodAngle(MathUtil.clamp(params.get().getHoodAngle(), HoodConstants.hoodMinLimit, HoodConstants.hoodMaxLimit) * HoodConstants.gearRatio / 360.0)));
+    }
+
+    public boolean getHoodAtPosition() {
+        return Math.abs(getHoodDegrees() - getDesiredHoodDegrees()) < HoodConstants.hoodTolerance;
+    }
+
+    public void manualHood(double volts) {
+        hoodMotor.setVoltage(volts);
+    }
+
+    public double getShotAngle() {
+        return 180.0 - (getHoodDegrees() + 90.0);
     }
     
 

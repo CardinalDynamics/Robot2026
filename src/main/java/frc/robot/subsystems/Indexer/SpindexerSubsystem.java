@@ -1,5 +1,9 @@
 package frc.robot.subsystems.Indexer;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -7,10 +11,14 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+@Logged
 public class SpindexerSubsystem extends SubsystemBase {
     SparkMax SpindexerMotor;
     SparkMaxConfig motorConfig = new SparkMaxConfig();
@@ -39,5 +47,10 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     public void setSpindexerVoltage(double volts) {
         SpindexerMotor.setVoltage(volts);
+    }
+
+    public Command getSpindexerCommand(DoubleSupplier rpm) {
+        return run(() -> SpindexerMotor.setVoltage(controller.calculate(getSpindexerRPM())))
+        .alongWith(Commands.run(() -> controller.setGoal(rpm.getAsDouble())));
     }
 }

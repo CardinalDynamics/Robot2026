@@ -2,6 +2,7 @@ package frc.robot.subsystems.Turret;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -25,6 +26,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -35,6 +37,7 @@ public class TurretSubsystem extends SubsystemBase {
     VelocityVoltage voltageRequest = new VelocityVoltage(0);
     TalonFXConfiguration motorConfig;
     MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0);
+    double desiredTurretPosition;
 
     private final DCMotorSim m_motorSimModel = new DCMotorSim(
     LinearSystemId.createDCMotorSystem(
@@ -72,18 +75,27 @@ public class TurretSubsystem extends SubsystemBase {
         turretMotor.setPosition(TurretConstants.turretOffset);
     }
 
+    public double getDesiredTurretDegrees() {
+        return desiredTurretPosition * 360.0 / TurretConstants.gearRatio;
+    }
+
+    private void setDesiredTurretAngle(double rotations) {
+        desiredTurretPosition = rotations;
+    }
+
     // get the position of the turret in degrees
     public double getTurretDegrees() {
         return turretMotor.getPosition().getValueAsDouble() * 360.0 / TurretConstants.gearRatio;
     }
 
     public void manualTurret(double input) {
-        turretMotor.setVoltage(3);
+        turretMotor.setVoltage(input);
     }
 
     // use motion magic to move the turret to desired angle
     public Command getTurretPIDCommand(DoubleSupplier degrees) {
-        return run(() -> turretMotor.setControl(motionMagicRequest.withPosition(degrees.getAsDouble() * TurretConstants.gearRatio / 360.0)));
+        return run(() -> turretMotor.setControl(motionMagicRequest.withPosition(degrees.getAsDouble() * TurretConstants.gearRatio / 360.0)))
+            .alongWith(Commands.run(() -> setDesiredTurretAngle(degrees.getAsDouble() * TurretConstants.gearRatio / 360.0)));
     }
 
     // convert angles in (0, 360) to (-180, 180)
@@ -112,6 +124,10 @@ public class TurretSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("shot angle", desiredShotAngle.getDegrees());
             return (desiredShotAngle.getDegrees() - drivePose.get().getRotation().getDegrees());
         };
+    }
+
+    public boolean getTurretAtPosition() {
+        return Math.abs(getTurretDegrees() - getDesiredTurretDegrees()) < TurretConstants.turretTolerance;
     }
 
     @Override

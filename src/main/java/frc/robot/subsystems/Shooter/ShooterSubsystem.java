@@ -7,8 +7,10 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -20,6 +22,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Utility.ShooterParameters;
@@ -32,6 +35,7 @@ public class ShooterSubsystem extends SubsystemBase {
     TalonFXConfiguration motorConfigLeft;
     TalonFXConfiguration motorConfigRight;
     MotionMagicVelocityVoltage motionMagicRequest = new MotionMagicVelocityVoltage(0);
+    double desiredShooterSpeed = 0;
 
     private final DCMotorSim m_motorSimModel = new DCMotorSim(
     LinearSystemId.createDCMotorSystem(
@@ -41,23 +45,22 @@ public class ShooterSubsystem extends SubsystemBase {
     );
     
     public ShooterSubsystem() {
-        shooterMotorLeft = new TalonFX(ShooterConstants.shooterMotorLeftCANID, Constants.canivoreBus);
         shooterMotorRight = new TalonFX(ShooterConstants.shooterMotorRightCANID, Constants.canivoreBus);
+        shooterMotorLeft = new TalonFX(ShooterConstants.shooterMotorLeftCANID, Constants.canivoreBus);
 
         // Config settings for the x60
+        motorConfigRight = new TalonFXConfiguration();
         motorConfigLeft = new TalonFXConfiguration();
-        motorConfigLeft.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        Slot0Configs slot0 = motorConfigLeft.Slot0;
+        motorConfigRight.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        Slot0Configs slot0 = motorConfigRight.Slot0;
         slot0.kP = ShooterConstants.kP;
         slot0.kI = ShooterConstants.kI;
         slot0.kD = ShooterConstants.kD;
         slot0.kS = ShooterConstants.kS;
         slot0.kV = ShooterConstants.kV;
         slot0.kA = ShooterConstants.kA;
-        motorConfigLeft.MotionMagic.MotionMagicCruiseVelocity = ShooterConstants.MotionMagicCruiseVelocity;
-        motorConfigLeft.MotionMagic.MotionMagicAcceleration = ShooterConstants.MotionMagicAcceleration;
-
-        motorConfigRight = motorConfigLeft;
+        motorConfigRight.MotionMagic.MotionMagicCruiseVelocity = ShooterConstants.MotionMagicCruiseVelocity;
+        motorConfigRight.MotionMagic.MotionMagicAcceleration = ShooterConstants.MotionMagicAcceleration;
 
         motorConfigRight.MotorOutput.Inverted = ShooterConstants.shooterMotorRightInvertedValue;
         motorConfigLeft.MotorOutput.Inverted = ShooterConstants.shooterMotorLeftInvertedValue;
@@ -70,26 +73,42 @@ public class ShooterSubsystem extends SubsystemBase {
         var shooterMotorSim = shooterMotorLeft.getSimState();
         shooterMotorSim.Orientation = ChassisReference.CounterClockwise_Positive;
         shooterMotorSim.setMotorType(TalonFXSimState.MotorType.KrakenX60);
+
+        shooterMotorLeft.setControl(new Follower(ShooterConstants.shooterMotorRightCANID, MotorAlignmentValue.Opposed));
+    }
+
+    public double getDesiredShooterRPM() {
+        return desiredShooterSpeed * 60.0;
+    }
+
+    private void setDesiredShooterSpeed(double rps) {
+        desiredShooterSpeed = rps;
+    }
+
+    public boolean getShooterAtSpeed() {
+        return Math.abs(getDesiredShooterRPM() - getShooterSpeed()) < ShooterConstants.shooterToleranceRPM;
     }
     
     // get the rotational velocity of the shooter wheels in RPM
     public double getShooterSpeed() {
-        return shooterMotorLeft.getVelocity().getValueAsDouble();
+        return shooterMotorRight.getVelocity().getValueAsDouble() * 60.0;
     }
 
     // use motion magic to change the speed of the shooter wheels
     public Command getShooterPIDCommand(DoubleSupplier rpm) {
         return run(() -> {
-            shooterMotorLeft.setControl(motionMagicRequest.withVelocity(rpm.getAsDouble()));
-            shooterMotorRight.setControl(motionMagicRequest.withVelocity(rpm.getAsDouble()));
-        });
+            shooterMotorRight.setControl(motionMagicRequest.withVelocity(rpm.getAsDouble() / 60.0));
+        }).alongWith(Commands.run(() -> setDesiredShooterSpeed(rpm.getAsDouble() / 60.0)));
     }
 
     public Command getShooterPIDCommand(Supplier<ShooterParameters> params) {
         return run(() -> {
-            shooterMotorLeft.setControl(motionMagicRequest.withVelocity(params.get().shooterSpeedRPM));
-            shooterMotorRight.setControl(motionMagicRequest.withVelocity(params.get().shooterSpeedRPM));
-        });
+            shooterMotorRight.setControl(motionMagicRequest.withVelocity(params.get().shooterSpeedRPM / 60.0));
+        }).alongWith(Commands.run(() -> setDesiredShooterSpeed(params.get().shooterSpeedRPM / 60.0)));
+    }
+
+    public void setShooterVoltage(double volts) {
+        shooterMotorRight.setVoltage(volts);
     }
 
 

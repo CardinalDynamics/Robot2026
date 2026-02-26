@@ -1,5 +1,6 @@
 package frc.robot;
 
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -33,5 +34,22 @@ public class ScoringLookupTable {
         double sec = p1.getTimeOfFlight() + t * (p2.getTimeOfFlight() - p1.getTimeOfFlight());
 
         return new ShooterParameters(degrees, rpm, sec);
+    }
+
+
+    public static double velocityToEffectiveDistance(double velocity) {
+        // Binary search or iterate through table to find distance
+        // where (distance / ToF) = velocity
+        // Most InterpolatingTreeMap implementations support inverse lookup
+        // or you can build a reverse map: velocity → distance
+
+        for (Map.Entry<Double, ShooterParameters> entry : table.entrySet()) {
+            double dist = entry.getKey();
+            double vel = dist / entry.getValue().getTimeOfFlight();
+            if (vel >= velocity) {
+                return dist; // Interpolate for better accuracy
+            }
+        }
+        return table.lastKey(); // Clamp to max
     }
 }

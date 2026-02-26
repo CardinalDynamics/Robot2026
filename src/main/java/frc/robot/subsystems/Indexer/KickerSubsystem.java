@@ -21,6 +21,7 @@ public class KickerSubsystem extends SubsystemBase {
     public KickerSubsystem() {
         kickerMotor = new SparkMax(IndexerConstants.kickerMotorCANID, MotorType.kBrushless);
         motorConfig.idleMode(IdleMode.kBrake);
+        motorConfig.inverted(true);
         kickerMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = new ProfiledPIDController(IndexerConstants.kKickerP, IndexerConstants.kKickerI, IndexerConstants.kKickerD,
             new Constraints(IndexerConstants.KickerMaxVelocity, IndexerConstants.KickerMaxAcceleration));

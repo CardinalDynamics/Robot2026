@@ -15,12 +15,15 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -51,6 +54,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+
+    public final SendableChooser<Pose2d> m_autoChooser = new SendableChooser<>();
+
+    public Pose2d passingTarget = Constants.leftPassTarget;
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -212,10 +219,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return () -> {
             Pose2d target = Constants.hubPose;
             if (getPose().getX() > Constants.allianceZoneCutoffMeters) {
-                target = Constants.passTarget;
+                target = passingTarget;
             }
             return target;
         };
+    }
+
+    public void setPassingTarget(Pose2d target) {
+        passingTarget = target;
+    }
+
+    public Translation2d getRobotVelocityVector() {
+        return new Translation2d(getState().Speeds.vxMetersPerSecond, getState().Speeds.vyMetersPerSecond);
     }
 
     /**
