@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Set;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -13,6 +15,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -37,7 +40,7 @@ import frc.robot.subsystems.Turret.TurretSubsystem;
 
 @Logged
 public class RobotContainer {
-    private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+    private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
@@ -51,10 +54,11 @@ public class RobotContainer {
 
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
+    private final CommandXboxController debugController = new CommandXboxController(2);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final TurretSubsystem turret = new TurretSubsystem();
-    // public final HoodSubsystem hood = new HoodSubsystem();
+    public final HoodSubsystem hood = new HoodSubsystem();
     public final ShooterSubsystem shooter = new ShooterSubsystem();
     public final ClimberSubsystem climber = new ClimberSubsystem();
     public final IntakePivotSubsystem pivot = new IntakePivotSubsystem();
@@ -62,11 +66,15 @@ public class RobotContainer {
     public final SpindexerSubsystem spindexer = new SpindexerSubsystem();
     public final KickerSubsystem kicker = new KickerSubsystem();
 
-    // public final AutoAim autoAimCommandFactory = new AutoAim(drivetrain, turret, hood, shooter, spindexer, kicker);
+    public final AutoAim autoAimCommandFactory = new AutoAim(drivetrain, turret, hood, shooter, spindexer, kicker);
 
     public RobotContainer() {
+        SmartDashboard.putNumber("set hood", 18.0);
+        SmartDashboard.putNumber("set shooter", 0);
+        SmartDashboard.putNumber("set turret", 0);
         configureDriverControls();
         configureOperatorControls();
+        configureDebugControls();
         configureDefaultCommands();
     }
 
@@ -94,24 +102,14 @@ public class RobotContainer {
             point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))
         ));
 
-        // Run SysId routines when holding back/start and X/Y.
-        // Note that each routine should be run exactly once in a single log.
-        driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-
         // Reset the field-centric heading on left bumper press.
         driverController.povUp().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        // driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateAssumedShooterCommand());
-        // driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateSpindexerCommand());
-
-        driverController.rightTrigger().onTrue(shooter.getShooterPIDCommand(() -> 5000)).onFalse(shooter.getShooterPIDCommand(() -> 0));
-        driverController.rightTrigger().whileTrue(Commands.run(() -> kicker.setSpindexerVoltage(6)));
-        driverController.rightTrigger().whileTrue(Commands.run(() -> spindexer.setSpindexerVoltage(-6)));
+        driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateAssumedShooterCommand());
+        driverController.rightTrigger().whileTrue(Commands.run(() -> spindexer.setSpindexerVoltage(8), spindexer));
+        driverController.rightTrigger().whileTrue(Commands.run(() -> kicker.setSpindexerVoltage(12), kicker));
 
         driverController.leftTrigger().whileTrue(Commands.run(() -> wheels.setIntakeWheelVoltage(-4), wheels));
         driverController.leftTrigger().whileTrue(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotDeployPosition), pivot));
@@ -127,28 +125,36 @@ public class RobotContainer {
         operatorController.rightBumper().whileTrue(Commands.run(() -> wheels.useIntakeWheelPID(IntakeConstants.IntakeSpeed), wheels));
         operatorController.leftBumper().whileTrue(Commands.run(() -> wheels.useIntakeWheelPID(-IntakeConstants.IntakeSpeed * .5), wheels));
 
-        operatorController.x().onTrue(Commands.runOnce(() -> drivetrain.setPassingTarget(Constants.leftPassTarget)));
-        operatorController.b().onTrue(Commands.runOnce(() -> drivetrain.setPassingTarget(Constants.rightPassTarget)));
-
-        // operatorController.a().toggleOnTrue(autoAimCommandFactory.generateTurretIdleCommand());
-        // operatorController.a().toggleOnTrue(autoAimCommandFactory.generateHoodIdleCommand());
+        operatorController.a().toggleOnTrue(autoAimCommandFactory.generateTurretIdleCommand());
+        operatorController.a().toggleOnTrue(autoAimCommandFactory.generateHoodIdleCommand());
         operatorController.a().toggleOnTrue(shooter.getShooterPIDCommand(() -> ShooterConstants.shooterIdleRPM));
         
     }
 
+    private void configureDebugControls() {
+        debugController.a().whileTrue(Commands.defer(() -> hood.getHoodPIDCommand(() -> SmartDashboard.getNumber("set hood", 18.0)), Set.of(hood)));
+        debugController.b().whileTrue(Commands.defer(() -> shooter.getShooterPIDCommand(() -> SmartDashboard.getNumber("set shooter", 0)), Set.of(shooter)));
+        debugController.x().whileTrue(Commands.defer(() -> turret.getTurretPIDCommand(() -> turret.degreesToTurretAngle(SmartDashboard.getNumber("set turret", 0))), Set.of(turret)));
+        debugController.y().whileTrue(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotStowPosiion), pivot));
+
+        debugController.povUp().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        debugController.povRight().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        debugController.povDown().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        debugController.povLeft().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+    }
+
     public void configureDefaultCommands() {
-        // turret.setDefaultCommand(autoAimCommandFactory.generateTurretIdleCommand());
-        // hood.setDefaultCommand(autoAimCommandFactory.generateHoodIdleCommand());
         // shooter.setDefaultCommand(shooter.getShooterPIDCommand(() -> ShooterConstants.shooterIdleRPM));
-        climber.setDefaultCommand(Commands.run(() -> climber.setClimberVelocity(0), climber));
+        climber.setDefaultCommand(Commands.run(() -> climber.setClimberVoltage(0), climber));
         pivot.setDefaultCommand(Commands.run(() -> pivot.setPivotVoltage(0), pivot));
         wheels.setDefaultCommand(Commands.run(() -> wheels.setIntakeWheelVoltage(0), wheels));
         spindexer.setDefaultCommand(Commands.run(() -> spindexer.setSpindexerVoltage(0), spindexer));
         kicker.setDefaultCommand(Commands.run(() -> kicker.setSpindexerVoltage(0), kicker));
         
-        turret.setDefaultCommand(Commands.run(() -> turret.manualTurret(0), turret));
-        // hood.setDefaultCommand(Commands.run(() -> hood.manualHood(0), hood));
-        shooter.setDefaultCommand(Commands.run(() -> shooter.setShooterVoltage(0), shooter));
+        // turret.setDefaultCommand(Commands.run(() -> turret.manualTurret(0), turret));
+        turret.setDefaultCommand(autoAimCommandFactory.generateTurretIdleCommand());
+        hood.setDefaultCommand(Commands.run(() -> hood.manualHood(0), hood));
+        shooter.setDefaultCommand(shooter.getShooterPIDCommand(() -> ShooterConstants.shooterIdleRPM));
     }
 
     

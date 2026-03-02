@@ -70,17 +70,16 @@ public class HoodSubsystem extends SubsystemBase {
         hoodMotorSim.setMotorType(TalonFXSimState.MotorType.KrakenX44);
 
         // set offset for hood
-        hoodMotor.setPosition(0);
-        desiredHoodPosition = getHoodDegrees();
+        hoodMotor.setPosition(HoodConstants.gearRatio * HoodConstants.hoodOffset / 360.0);
     }
     
     // get the position of the hood in degrees
     public double getHoodDegrees() {
-        return hoodMotor.getPosition().getValueAsDouble() * 360.0 / HoodConstants.gearRatio + HoodConstants.hoodOffset;
+        return hoodMotor.getPosition().getValueAsDouble() * 360.0 / HoodConstants.gearRatio;
     }
 
     public double getDesiredHoodDegrees() {
-        return desiredHoodPosition * 360.0 / HoodConstants.gearRatio + HoodConstants.hoodOffset;
+        return desiredHoodPosition * 360.0 / HoodConstants.gearRatio;
     }
 
     private void setDesiredHoodAngle(double rotations) {

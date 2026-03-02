@@ -58,7 +58,7 @@ public class ClimberSubsystem extends SubsystemBase {
         climbMotorSim.Orientation = ChassisReference.CounterClockwise_Positive;
         climbMotorSim.setMotorType(TalonFXSimState.MotorType.KrakenX60);
 
-        climbMotor.setPosition(0);
+        climbMotor.setPosition(60);
     }
 
     public double getClimberPosition() {
@@ -69,8 +69,8 @@ public class ClimberSubsystem extends SubsystemBase {
         climbMotor.setControl(motionMagicRequest.withPosition(position));
     }
 
-    public void setClimberVelocity(double velocity) {
-        climbMotor.setControl(velocityRequest.withVelocity(velocity));
+    public void setClimberVoltage(double volts) {
+        climbMotor.setVoltage(volts);
     }
 
     @Override

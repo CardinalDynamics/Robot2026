@@ -7,7 +7,6 @@ public class IntakeConstants {
     public static final double pivotGearRatio = 82.74;
     public static final double wheelGearRatio = 1;
 
-    // TODO tune these constants
     public static final double kPivotP = 1.0;
     public static final double kPivotI = 0;
     public static final double kPivotD = 0;
@@ -15,13 +14,12 @@ public class IntakeConstants {
     public static final double kPivotV = 0;
     public static final double kPivotA = 0;
 
-    // TODO Find these limits
     public static final double PivotMotionMagicCruiseVelocity = 1000;
     public static final double PivotMotionMagicAcceleration = 1500;
 
     public static final double pivotOffset = 0;
 
-    public static final double pivotStowPosiion = 0;
+    public static final double pivotStowPosiion = 1;
     public static final double pivotDeployPosition = 26 / 82.74 * 360.0;
 
     public static final double kWheelP = .5;

@@ -18,6 +18,7 @@ import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -37,7 +38,6 @@ public class TurretSubsystem extends SubsystemBase {
     VelocityVoltage voltageRequest = new VelocityVoltage(0);
     TalonFXConfiguration motorConfig;
     MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0);
-    double desiredTurretPosition;
 
     private final DCMotorSim m_motorSimModel = new DCMotorSim(
     LinearSystemId.createDCMotorSystem(
@@ -45,6 +45,8 @@ public class TurretSubsystem extends SubsystemBase {
     ),
     DCMotor.getKrakenX44Foc(1)
     );
+
+    double desiredPosition = 90.0;
 
     
     public TurretSubsystem() {
@@ -62,7 +64,6 @@ public class TurretSubsystem extends SubsystemBase {
         slot0.kA = TurretConstants.kA;
         motorConfig.MotionMagic.MotionMagicCruiseVelocity = TurretConstants.MotionMagicCruiseVelocity;
         motorConfig.MotionMagic.MotionMagicAcceleration = TurretConstants.MotionMagicAcceleration;
-
         // apply config
         turretMotor.getConfigurator().apply(motorConfig);
 
@@ -72,15 +73,11 @@ public class TurretSubsystem extends SubsystemBase {
         turretMotorSim.setMotorType(TalonFXSimState.MotorType.KrakenX44);
 
         // set offset for turret
-        turretMotor.setPosition(TurretConstants.turretOffset);
+        turretMotor.setPosition(TurretConstants.gearRatio * TurretConstants.turretOffset / 360.0);
     }
 
-    public double getDesiredTurretDegrees() {
-        return desiredTurretPosition * 360.0 / TurretConstants.gearRatio;
-    }
-
-    private void setDesiredTurretAngle(double rotations) {
-        desiredTurretPosition = rotations;
+    public void setDesiredPosition(double degrees) {
+        desiredPosition = degrees;
     }
 
     // get the position of the turret in degrees
@@ -94,8 +91,9 @@ public class TurretSubsystem extends SubsystemBase {
 
     // use motion magic to move the turret to desired angle
     public Command getTurretPIDCommand(DoubleSupplier degrees) {
-        return run(() -> turretMotor.setControl(motionMagicRequest.withPosition(degrees.getAsDouble() * TurretConstants.gearRatio / 360.0)))
-            .alongWith(Commands.run(() -> setDesiredTurretAngle(degrees.getAsDouble() * TurretConstants.gearRatio / 360.0)));
+        return run(() -> turretMotor.setControl(motionMagicRequest.withPosition(
+            degreesToTurretAngle(degrees.getAsDouble()) * TurretConstants.gearRatio / 360.0)))
+            .alongWith(Commands.run(() -> setDesiredPosition(degrees.getAsDouble())));
     }
 
     // convert angles in (0, 360) to (-180, 180)
@@ -112,7 +110,7 @@ public class TurretSubsystem extends SubsystemBase {
         } else if (wrappedTarget < TurretConstants.counterclockwiseTurretLimitDegrees) {
             wrappedTarget += 360.0;
         }
-        return wrappedTarget;
+        return MathUtil.clamp(wrappedTarget, TurretConstants.counterclockwiseTurretLimitDegrees, TurretConstants.clockwiseTurretLimitDegrees);
     }
 
     // get the desired shot angle based on the position of the robot
@@ -124,10 +122,6 @@ public class TurretSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("shot angle", desiredShotAngle.getDegrees());
             return (desiredShotAngle.getDegrees() - drivePose.get().getRotation().getDegrees());
         };
-    }
-
-    public boolean getTurretAtPosition() {
-        return Math.abs(getTurretDegrees() - getDesiredTurretDegrees()) < TurretConstants.turretTolerance;
     }
 
     @Override

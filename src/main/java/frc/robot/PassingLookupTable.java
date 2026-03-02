@@ -9,8 +9,8 @@ public class PassingLookupTable {
     private static final NavigableMap<Double, ShooterParameters> table = new TreeMap<>();
 
     static {
-        table.put(1.0, new ShooterParameters(42.0, 1000, 1.0));
-        table.put(8.0, new ShooterParameters(  45.0, 4000, 3.0));
+        table.put(1.0, new ShooterParameters(20.0, 1000, 1.0));
+        table.put(8.0, new ShooterParameters(  30.0, 4000, 3.0));
     }
 
     public static ShooterParameters get(double distance) {

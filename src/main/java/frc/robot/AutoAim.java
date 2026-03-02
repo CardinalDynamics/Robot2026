@@ -59,7 +59,7 @@ public class AutoAim {
     public Supplier<ShooterParameters> getScoringShooterParamaters(Supplier<Pose2d> drivePose) {
         return () -> {
             ShooterParameters params = ScoringLookupTable.get(drivePose.get().getTranslation()
-                .getDistance(Constants.hubPose.getTranslation()));
+                .getDistance(drivetrain.getHubPose().getTranslation()));
             return params;
         };
     }
@@ -67,7 +67,7 @@ public class AutoAim {
     public Supplier<ShooterParameters> getPassingShooterParamaters(Supplier<Pose2d> drivePose) {
         return () -> {
             ShooterParameters params = PassingLookupTable.get(drivePose.get().getTranslation()
-                .getDistance(Constants.hubPose.getTranslation()));
+                .getDistance(drivetrain.getLeftPassingPose().getTranslation()));
             return params;
         };
     }
@@ -75,10 +75,10 @@ public class AutoAim {
     public Supplier<ShooterParameters> getAssumedShooterParamaters(Supplier<Pose2d> drivePose) {
         return () -> {
             ShooterParameters params = ScoringLookupTable.get(drivePose.get().getTranslation()
-                .getDistance(Constants.hubPose.getTranslation()));
-            if (drivetrain.getAssumedTarget().get() == Constants.leftPassTarget) {
+                .getDistance(drivetrain.getHubPose().getTranslation()));
+            if (drivetrain.getAssumedTarget().get() != drivetrain.getHubPose()) {
                 params = PassingLookupTable.get(drivePose.get().getTranslation()
-                .getDistance(Constants.hubPose.getTranslation()));
+                .getDistance(drivetrain.getAssumedTarget().get().getTranslation()));
             }
             return params;
         };
@@ -87,7 +87,7 @@ public class AutoAim {
     public Supplier<ShooterParameters> getScoringSOTMCommand(Supplier<Pose2d> drivePose) {
         return () -> {
             Translation2d futurePos = drivePose.get().getTranslation().plus(drivetrain.getRobotVelocityVector().times(Constants.latencyCompensation));
-            Translation2d toGoal = Constants.hubPose.getTranslation().minus(futurePos);
+            Translation2d toGoal = drivetrain.getHubPose().getTranslation().minus(futurePos);
             double distance = toGoal.getNorm();
             Translation2d targetDirection = toGoal.div(distance);
             ShooterParameters baseline = ScoringLookupTable.get(distance);
@@ -104,7 +104,7 @@ public class AutoAim {
 
 
     public Command generateTurretScoreCommand() {
-        return Commands.defer(() -> turret.getTurretPIDCommand(turret.getDesiredTurretAngle(() -> Constants.hubPose, drivetrain::getShooterPose)), Set.of(turret));
+        return Commands.defer(() -> turret.getTurretPIDCommand(turret.getDesiredTurretAngle(drivetrain::getHubPose, drivetrain::getShooterPose)), Set.of(turret));
     }
 
     public Command generateTurretIdleCommand() {
@@ -124,7 +124,7 @@ public class AutoAim {
     }
     
     public Command generateSpindexerCommand() {
-        return Commands.defer(() -> spindexer.getSpindexerCommand(getSpindexerSpeed(turret::getTurretAtPosition, hood::getHoodAtPosition, shooter::getShooterAtSpeed)), Set.of(spindexer));
+        return Commands.defer(() -> spindexer.getSpindexerCommand(getSpindexerSpeed(hood::getHoodAtPosition, hood::getHoodAtPosition, shooter::getShooterAtSpeed)), Set.of(spindexer));
     }
 
     public Command generateSOTMScoringCommand() {

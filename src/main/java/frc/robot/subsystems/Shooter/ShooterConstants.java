@@ -9,7 +9,6 @@ public class ShooterConstants {
     public static final InvertedValue shooterMotorLeftInvertedValue = InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue shooterMotorRightInvertedValue = InvertedValue.Clockwise_Positive;
 
-    // TODO tune these constants
     public static final double kP = .35;
     public static final double kI = 0;
     public static final double kD = 0;

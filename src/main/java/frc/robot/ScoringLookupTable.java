@@ -10,8 +10,8 @@ public class ScoringLookupTable {
     private static final NavigableMap<Double, ShooterParameters> table = new TreeMap<>();
 
     static {
-        table.put(1.0, new ShooterParameters(15.0, 1000, 1.0));
-        table.put(8.0, new ShooterParameters(  75.0, 4000, 3.0));
+        table.put(1.0, new ShooterParameters(25.0, 1000, 1.0));
+        table.put(8.0, new ShooterParameters(  35.0, 4000, 3.0));
     }
 
     public static ShooterParameters get(double distance) {
