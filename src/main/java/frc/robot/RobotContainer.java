@@ -133,8 +133,8 @@ public class RobotContainer {
 
     private void configureDebugControls() {
         debugController.a().whileTrue(Commands.defer(() -> hood.getHoodPIDCommand(() -> SmartDashboard.getNumber("set hood", 18.0)), Set.of(hood)));
-        debugController.b().whileTrue(Commands.defer(() -> shooter.getShooterPIDCommand(() -> SmartDashboard.getNumber("set shooter", 0)), Set.of(shooter)));
-        debugController.x().whileTrue(Commands.defer(() -> turret.getTurretPIDCommand(() -> turret.degreesToTurretAngle(SmartDashboard.getNumber("set turret", 0))), Set.of(turret)));
+        debugController.a().whileTrue(Commands.defer(() -> shooter.getShooterPIDCommand(() -> SmartDashboard.getNumber("set shooter", 0)), Set.of(shooter)));
+        debugController.a().whileTrue(Commands.defer(() -> turret.getTurretPIDCommand(() -> turret.degreesToTurretAngle(SmartDashboard.getNumber("set turret", 0))), Set.of(turret)));
         debugController.y().whileTrue(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotStowPosiion), pivot));
 
         debugController.povUp().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));

@@ -18,8 +18,7 @@ import edu.wpi.first.math.util.Units;
 public class DriveConstants {
 
     // TODO find this
-    // public static final Transform2d shooterOffset = new Transform2d(new Translation2d(Units.inchesToMeters(4.453), -Units.inchesToMeters(5.875)), new Rotation2d());
-    public static final Transform2d shooterOffset = new Transform2d(new Translation2d(2, -2), new Rotation2d());
+    public static final Transform2d shooterOffset = new Transform2d(new Translation2d(Units.inchesToMeters(4.453), -Units.inchesToMeters(5.875)), new Rotation2d());
 
     public static final Transform3d ROBOT_TO_QUEST = new Transform3d( /*TODO: Put your x, y, z, yaw, pitch, and roll offsets here!*/ );
 

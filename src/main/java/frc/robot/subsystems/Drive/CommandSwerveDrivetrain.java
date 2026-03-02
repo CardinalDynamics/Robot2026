@@ -314,13 +314,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             if (alliance.get() == DriverStation.Alliance.Red) {
                 if (getPose().getX() > Constants.redAllianceZoneCutoffMeters) {
                     target = allianceHubPose;
-                } else if (getPose().getY() < Constants.verticalHalfMeters) {
+                } else if (getPose().getY() < Constants.horizontalCenterLine) {
                     target = leftPassingPose;
                 } else {
                     target = rightPassingPose;
                 }
             } else {
-                if (getPose().getY() < Constants.verticalHalfMeters) {
+                if (getPose().getY() < Constants.horizontalCenterLine) {
                     target = rightPassingPose;
                 } else {
                     target = leftPassingPose;

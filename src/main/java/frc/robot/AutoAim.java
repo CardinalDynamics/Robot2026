@@ -84,7 +84,7 @@ public class AutoAim {
         };
     }
 
-    public Supplier<ShooterParameters> getScoringSOTMCommand(Supplier<Pose2d> drivePose) {
+    public Supplier<ShooterParameters> getScoringSOTMParams(Supplier<Pose2d> drivePose) {
         return () -> {
             Translation2d futurePos = drivePose.get().getTranslation().plus(drivetrain.getRobotVelocityVector().times(Constants.latencyCompensation));
             Translation2d toGoal = drivetrain.getHubPose().getTranslation().minus(futurePos);
