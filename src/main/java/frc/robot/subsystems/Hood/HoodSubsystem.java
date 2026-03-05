@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Utility.ShooterParameters;
 
-@Logged
 public class HoodSubsystem extends SubsystemBase {
 
     TalonFX hoodMotor;
@@ -74,10 +73,12 @@ public class HoodSubsystem extends SubsystemBase {
     }
     
     // get the position of the hood in degrees
+    @Logged
     public double getHoodDegrees() {
         return hoodMotor.getPosition().getValueAsDouble() * 360.0 / HoodConstants.gearRatio;
     }
 
+    @Logged
     public double getDesiredHoodDegrees() {
         return desiredHoodPosition * 360.0 / HoodConstants.gearRatio;
     }

@@ -12,7 +12,6 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-@Logged
 public class KickerSubsystem extends SubsystemBase {
     SparkMax kickerMotor;
     SparkMaxConfig motorConfig = new SparkMaxConfig();

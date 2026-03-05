@@ -13,6 +13,7 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -31,7 +32,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-@Logged
 public class TurretSubsystem extends SubsystemBase {
 
     TalonFX turretMotor;
@@ -55,6 +55,7 @@ public class TurretSubsystem extends SubsystemBase {
         // Config settings for the x44
         motorConfig = new TalonFXConfiguration();
         motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         Slot0Configs slot0 = motorConfig.Slot0;
         slot0.kP = TurretConstants.kP;
         slot0.kI = TurretConstants.kI;
@@ -81,6 +82,7 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     // get the position of the turret in degrees
+    @Logged
     public double getTurretDegrees() {
         return turretMotor.getPosition().getValueAsDouble() * 360.0 / TurretConstants.gearRatio;
     }
@@ -121,6 +123,12 @@ public class TurretSubsystem extends SubsystemBase {
             targetPose.get().getX() - drivePose.get().getX()));
             SmartDashboard.putNumber("shot angle", desiredShotAngle.getDegrees());
             return (desiredShotAngle.getDegrees() - drivePose.get().getRotation().getDegrees());
+        };
+    }
+
+    public DoubleSupplier getDesiredTurretAngle(DoubleSupplier angle, Supplier<Pose2d> drivePose) {
+        return () -> {
+            return (angle.getAsDouble() - drivePose.get().getRotation().getDegrees());
         };
     }
 

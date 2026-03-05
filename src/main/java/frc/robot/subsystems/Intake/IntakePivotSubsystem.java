@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Hood.HoodConstants;
 
-@Logged
 public class IntakePivotSubsystem extends SubsystemBase {
 
     TalonFX pivotMotor;
@@ -67,6 +66,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
     }
 
     // get the position of the pivot in degrees
+    @Logged
     public double getPivotDegrees() {
         return pivotMotor.getPosition().getValueAsDouble() * 360.0 / IntakeConstants.pivotGearRatio;
     }

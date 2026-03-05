@@ -10,6 +10,9 @@ import java.util.Set;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -72,10 +75,25 @@ public class RobotContainer {
         SmartDashboard.putNumber("set hood", 18.0);
         SmartDashboard.putNumber("set shooter", 0);
         SmartDashboard.putNumber("set turret", 0);
+        registerCommands();
         configureDriverControls();
         configureOperatorControls();
         configureDebugControls();
         configureDefaultCommands();
+    }
+
+    private void registerCommands() {
+        NamedCommands.registerCommand("intake",
+            Commands.run(() -> wheels.setIntakeWheelVoltage(-4), wheels)
+            .alongWith(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotDeployPosition), pivot)));
+        NamedCommands.registerCommand("shoot",
+            autoAimCommandFactory.generateTurretIdleCommand()
+            .alongWith(autoAimCommandFactory.generateHoodIdleCommand())
+            .alongWith(autoAimCommandFactory.generateAssumedShooterCommand())
+            .alongWith(Commands.waitSeconds(.5).andThen(Commands.run(() -> spindexer.setSpindexerVoltage(8), spindexer)))
+            .alongWith(Commands.waitSeconds(.5).andThen(Commands.run(() -> kicker.setSpindexerVoltage(12), kicker)))
+            .withTimeout(10.0)
+            .finallyDo(() -> shooter.setShooterVoltage(0)));
     }
 
     private void configureDriverControls() {
@@ -107,12 +125,23 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateAssumedShooterCommand());
-        driverController.rightTrigger().whileTrue(Commands.run(() -> spindexer.setSpindexerVoltage(8), spindexer));
-        driverController.rightTrigger().whileTrue(Commands.run(() -> kicker.setSpindexerVoltage(12), kicker));
+        driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateAssumedShooterCommand())
+            .whileFalse(Commands.run(() -> shooter.setShooterVoltage(0), shooter));
+        driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateHoodIdleCommand())
+            .whileFalse(hood.getHoodPIDCommand(() -> 18.0));
+        driverController.rightTrigger().whileTrue(Commands.waitSeconds(.5).andThen(Commands.run(() -> spindexer.setSpindexerVoltage(8), spindexer)));
+        driverController.rightTrigger().whileTrue(Commands.waitSeconds(.5).andThen(Commands.run(() -> kicker.setSpindexerVoltage(12), kicker)));
+        driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateTurretIdleCommand());
 
-        driverController.leftTrigger().whileTrue(Commands.run(() -> wheels.setIntakeWheelVoltage(-4), wheels));
+        driverController.rightBumper().whileTrue(autoAimCommandFactory.generateSOTMScoringCommand());
+        driverController.rightBumper().whileTrue(Commands.waitSeconds(.5).andThen(Commands.run(() -> spindexer.setSpindexerVoltage(8), spindexer)));
+        driverController.rightBumper().whileTrue(Commands.waitSeconds(.5).andThen(Commands.run(() -> kicker.setSpindexerVoltage(12), kicker)));
+
+
+        driverController.leftTrigger().whileTrue(Commands.run(() -> wheels.setIntakeWheelVoltage(-10), wheels));
         driverController.leftTrigger().whileTrue(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotDeployPosition), pivot));
+        driverController.povRight().whileTrue(new PathPlannerAuto("Middle"));
+        driverController.povDown().onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d(3.534, 4.041, new Rotation2d())), drivetrain));
     }
 
     private void configureOperatorControls() {
@@ -120,27 +149,32 @@ public class RobotContainer {
 
         operatorController.povUp().onTrue(Commands.run(() -> climber.useClimberPID(ClimberConstants.deployedPosition), climber));
         operatorController.povDown().onTrue(Commands.run(() -> climber.useClimberPID(ClimberConstants.climbedPosition), climber));
+        
         operatorController.rightTrigger().whileTrue(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotStowPosiion), pivot));
-        operatorController.leftTrigger().whileTrue(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotDeployPosition), pivot));
+        operatorController.leftTrigger().whileTrue(Commands.run(() -> pivot.usePivotPID(12.0 / 82.74 * 360.0), pivot));
+
         operatorController.rightBumper().whileTrue(Commands.run(() -> wheels.useIntakeWheelPID(IntakeConstants.IntakeSpeed), wheels));
         operatorController.leftBumper().whileTrue(Commands.run(() -> wheels.useIntakeWheelPID(-IntakeConstants.IntakeSpeed * .5), wheels));
 
         operatorController.a().toggleOnTrue(autoAimCommandFactory.generateTurretIdleCommand());
         operatorController.a().toggleOnTrue(autoAimCommandFactory.generateHoodIdleCommand());
-        operatorController.a().toggleOnTrue(shooter.getShooterPIDCommand(() -> ShooterConstants.shooterIdleRPM));
-        
+        operatorController.y().whileTrue(hood.getHoodPIDCommand(() -> HoodConstants.hoodStowSetpoint));
     }
 
     private void configureDebugControls() {
         debugController.a().whileTrue(Commands.defer(() -> hood.getHoodPIDCommand(() -> SmartDashboard.getNumber("set hood", 18.0)), Set.of(hood)));
         debugController.a().whileTrue(Commands.defer(() -> shooter.getShooterPIDCommand(() -> SmartDashboard.getNumber("set shooter", 0)), Set.of(shooter)));
-        debugController.a().whileTrue(Commands.defer(() -> turret.getTurretPIDCommand(() -> turret.degreesToTurretAngle(SmartDashboard.getNumber("set turret", 0))), Set.of(turret)));
+        debugController.b().whileTrue(autoAimCommandFactory.generateTurretIdleCommand());
         debugController.y().whileTrue(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotStowPosiion), pivot));
 
-        debugController.povUp().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        debugController.povRight().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        debugController.povDown().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        debugController.povLeft().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        // debugController.povUp().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // debugController.povRight().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // debugController.povDown().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // debugController.povLeft().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        debugController.povUp().whileTrue(new PathPlannerAuto("DepotSide"));
+
+        debugController.rightTrigger().whileTrue(Commands.run(() -> spindexer.setSpindexerVoltage(8), spindexer));
+        debugController.rightTrigger().whileTrue(Commands.run(() -> kicker.setSpindexerVoltage(12), kicker));
     }
 
     public void configureDefaultCommands() {
@@ -151,10 +185,10 @@ public class RobotContainer {
         spindexer.setDefaultCommand(Commands.run(() -> spindexer.setSpindexerVoltage(0), spindexer));
         kicker.setDefaultCommand(Commands.run(() -> kicker.setSpindexerVoltage(0), kicker));
         
-        // turret.setDefaultCommand(Commands.run(() -> turret.manualTurret(0), turret));
-        turret.setDefaultCommand(autoAimCommandFactory.generateTurretIdleCommand());
-        hood.setDefaultCommand(Commands.run(() -> hood.manualHood(0), hood));
-        shooter.setDefaultCommand(shooter.getShooterPIDCommand(() -> ShooterConstants.shooterIdleRPM));
+        turret.setDefaultCommand(Commands.run(() -> turret.manualTurret(0), turret));
+        // turret.setDefaultCommand(autoAimCommandFactory.generateTurretIdleCommand());
+        hood.setDefaultCommand(hood.getHoodPIDCommand(() -> 18));
+        shooter.setDefaultCommand(Commands.run(() -> shooter.setShooterVoltage(0), shooter));
     }
 
     

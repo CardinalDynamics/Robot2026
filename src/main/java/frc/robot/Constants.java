@@ -27,5 +27,5 @@ public final class Constants {
     public static final double blueAllianceZoneCutoffMeters = Units.inchesToMeters(182.11);
     public static final double redAllianceZoneCutoffMeters = Units.inchesToMeters(651.22 - 182.11);
 
-    public static final double latencyCompensation = .1;
+    public static final double latencyCompensation = .2;
 }

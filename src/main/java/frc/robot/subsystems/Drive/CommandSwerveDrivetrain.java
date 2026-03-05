@@ -55,6 +55,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private double m_lastSimTime;
 
     QuestNav questNav = new QuestNav();
+    Pose2d questPose = new Pose2d();
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -319,12 +320,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 } else {
                     target = rightPassingPose;
                 }
-            } else {
+            } else if (getPose().getX() < Constants.blueAllianceZoneCutoffMeters) {
+                    target = allianceHubPose;
+            }
+            else {
                 if (getPose().getY() < Constants.horizontalCenterLine) {
                     target = rightPassingPose;
                 } else {
                     target = leftPassingPose;
-                }
+            }
             }
             return target;
         };
@@ -347,6 +351,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return new Translation2d(getState().Speeds.vxMetersPerSecond, getState().Speeds.vyMetersPerSecond);
     }
 
+    @Logged
+    public double distanceToGoal() {
+        return getAssumedTarget().get().getTranslation().getDistance(getShooterPose().getTranslation());
+    }
+
     /**
      * Runs the SysId Quasistatic test in the given direction for the routine
      * specified by {@link #m_sysIdRoutineToApply}.
@@ -367,6 +376,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutineToApply.dynamic(direction);
+    }
+
+    @Logged
+    public Pose2d getQuestPose() {
+        return questPose;
     }
 
     @Override
@@ -408,6 +422,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
                 // Add the measurement to our estimator
                 addVisionMeasurement(robotPose.toPose2d(), timestamp, DriveConstants.QUESTNAV_STD_DEVS);
+                this.questPose = robotPose.toPose2d();
             }
         }
 

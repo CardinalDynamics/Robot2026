@@ -7,9 +7,11 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -19,8 +21,10 @@ public class DriveConstants {
 
     // TODO find this
     public static final Transform2d shooterOffset = new Transform2d(new Translation2d(Units.inchesToMeters(4.453), -Units.inchesToMeters(5.875)), new Rotation2d());
-
-    public static final Transform3d ROBOT_TO_QUEST = new Transform3d( /*TODO: Put your x, y, z, yaw, pitch, and roll offsets here!*/ );
+    public static final Transform3d ROBOT_TO_QUEST = new Transform3d(
+        new Translation3d(Units.inchesToMeters(11.329), Units.inchesToMeters(8.35), Units.inchesToMeters(13.398792)), new Rotation3d());
+    public static final Transform3d ROBOT_TO_LL = new Transform3d(
+        new Translation3d(Units.inchesToMeters(11.141), Units.inchesToMeters(-11.141), Units.inchesToMeters(9.924476)), new Rotation3d());
 
     public static final Matrix<N3, N1> QUESTNAV_STD_DEVS =
     VecBuilder.fill(

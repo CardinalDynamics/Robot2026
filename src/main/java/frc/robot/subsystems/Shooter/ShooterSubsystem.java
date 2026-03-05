@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Utility.ShooterParameters;
 
-@Logged
 public class ShooterSubsystem extends SubsystemBase {
 
     TalonFX shooterMotorLeft;
@@ -77,6 +76,7 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotorLeft.setControl(new Follower(ShooterConstants.shooterMotorRightCANID, MotorAlignmentValue.Opposed));
     }
 
+    @Logged
     public double getDesiredShooterRPM() {
         return desiredShooterSpeed * 60.0;
     }
@@ -90,6 +90,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
     
     // get the rotational velocity of the shooter wheels in RPM
+    @Logged
     public double getShooterSpeed() {
         return shooterMotorRight.getVelocity().getValueAsDouble() * 60.0;
     }

@@ -17,6 +17,6 @@ public class ClimberConstants {
     public static final double MotionMagicCruiseVelocity = 3000;
     public static final double MotionMagicAcceleration = 3000;
 
-    public static final double climbedPosition = 60.0;
+    public static final double climbedPosition = 30.0;
     public static final double deployedPosition = 0.0;
 }

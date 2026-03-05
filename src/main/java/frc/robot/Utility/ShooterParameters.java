@@ -5,10 +5,10 @@ import java.util.Map;
 import frc.robot.ScoringLookupTable;
 
 public class ShooterParameters {
-    public double hoodAngleDegrees;
-    public double shooterSpeedRPM;
-    public double flightTimeSec;
-    public double turretAngle;
+    public double hoodAngleDegrees = 17.535;
+    public double shooterSpeedRPM = 0;
+    public double flightTimeSec = 0;
+    public double turretAngle = 0;
 
     public ShooterParameters(double angle, double speed, double time) {
         hoodAngleDegrees = angle;

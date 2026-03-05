@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-@Logged
 public class ClimberSubsystem extends SubsystemBase {
     TalonFX climbMotor;
     TalonFXConfiguration motorConfig;
@@ -61,6 +60,7 @@ public class ClimberSubsystem extends SubsystemBase {
         climbMotor.setPosition(60);
     }
 
+    @Logged
     public double getClimberPosition() {
         return climbMotor.getPosition().getValueAsDouble();
     }
