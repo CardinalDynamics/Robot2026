@@ -15,18 +15,6 @@
           "data": {
             "pathName": "DepotMiddle-DepotTrench"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "DepotTrench-DepotMiddleClose"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "DepotMiddleClose-DepotTrench"
-          }
         }
       ]
     }

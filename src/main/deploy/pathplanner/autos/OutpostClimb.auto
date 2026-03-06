@@ -5,27 +5,53 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "OutpostStart-OutpostMiddle"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "OutpostMiddle-OutpostTrench"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "OutpostTrench-Outpost"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Outpost-OutpostTower"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "OutpostStart-OutpostMiddle"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "OutpostMiddle-OutpostTrench"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "OutpostTrench-Outpost"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shoot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Outpost-OutpostTower"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]

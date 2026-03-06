@@ -334,6 +334,32 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         };
     }
 
+    @Logged
+    public Pose2d logAssumedTarget() {
+        Pose2d target = allianceHubPose;
+        var alliance = DriverStation.getAlliance();
+        if (alliance.get() == DriverStation.Alliance.Red) {
+            if (getPose().getX() > Constants.redAllianceZoneCutoffMeters) {
+                target = allianceHubPose;
+            } else if (getPose().getY() < Constants.horizontalCenterLine) {
+                target = leftPassingPose;
+            } else {
+                target = rightPassingPose;
+            }
+        } else if (getPose().getX() < Constants.blueAllianceZoneCutoffMeters) {
+                target = allianceHubPose;
+        }
+        else {
+            if (getPose().getY() < Constants.horizontalCenterLine) {
+                target = rightPassingPose;
+            } else {
+                target = leftPassingPose;
+        }
+        }
+        return target;
+    }
+
+    @Logged
     public Pose2d getLeftPassingPose() {
         return leftPassingPose;
     }
@@ -342,6 +368,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return rightPassingPose;
     }
 
+    @Logged
     public Pose2d getHubPose() {
         return allianceHubPose;
     }

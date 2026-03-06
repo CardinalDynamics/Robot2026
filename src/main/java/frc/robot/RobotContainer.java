@@ -138,10 +138,10 @@ public class RobotContainer {
         driverController.rightBumper().whileTrue(Commands.waitSeconds(.5).andThen(Commands.run(() -> kicker.setSpindexerVoltage(12), kicker)));
 
 
-        driverController.leftTrigger().whileTrue(Commands.run(() -> wheels.setIntakeWheelVoltage(-10), wheels));
+        driverController.leftTrigger().whileTrue(Commands.run(() -> wheels.setIntakeWheelVoltage(-4), wheels));
         driverController.leftTrigger().whileTrue(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotDeployPosition), pivot));
         driverController.povRight().whileTrue(new PathPlannerAuto("Middle"));
-        driverController.povDown().onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d(3.534, 4.041, new Rotation2d())), drivetrain));
+        driverController.povDown().whileTrue(new PathPlannerAuto("OutpostClimb"));
     }
 
     private void configureOperatorControls() {

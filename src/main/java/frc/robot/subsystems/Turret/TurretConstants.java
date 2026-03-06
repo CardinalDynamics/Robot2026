@@ -17,7 +17,7 @@ public final class TurretConstants {
     public static final double gearRatio = 37.9116666;
 
     // TODO find these limits
-    public static final double clockwiseTurretLimitDegrees = 150;
+    public static final double clockwiseTurretLimitDegrees = 130;
     public static final double counterclockwiseTurretLimitDegrees = -270;
 
     // TODO find this offset
