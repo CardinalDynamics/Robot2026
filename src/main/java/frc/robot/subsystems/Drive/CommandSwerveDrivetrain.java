@@ -359,7 +359,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return target;
     }
 
-    @Logged
     public Pose2d getLeftPassingPose() {
         return leftPassingPose;
     }
@@ -368,7 +367,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return rightPassingPose;
     }
 
-    @Logged
     public Pose2d getHubPose() {
         return allianceHubPose;
     }
@@ -381,6 +379,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     @Logged
     public double distanceToGoal() {
         return getAssumedTarget().get().getTranslation().getDistance(getShooterPose().getTranslation());
+    }
+
+    public SwerveRequest commandChassisSpeeds(ChassisSpeeds speeds) {
+        return pathApplyRobotSpeeds.withSpeeds(ChassisSpeeds.discretize(speeds, 0.020));
     }
 
     /**

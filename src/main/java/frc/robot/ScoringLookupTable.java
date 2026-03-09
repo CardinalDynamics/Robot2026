@@ -22,7 +22,7 @@ public class ScoringLookupTable {
     }
 
     public static ShooterParameters get(double distance) {
-        double clampedDist = MathUtil.clamp(distance, 2.3087, 5.274);
+        double clampedDist = MathUtil.clamp(distance, 2.3087, 9.18);
         var lower = table.floorEntry(clampedDist);
         var upper = table.ceilingEntry(clampedDist);
 
