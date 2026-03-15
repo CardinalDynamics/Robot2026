@@ -1,13 +1,18 @@
 package frc.robot;
 
+import java.nio.file.attribute.PosixFileAttributes;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleFunction;
 import java.util.function.DoubleSupplier;
+import java.util.function.DoubleUnaryOperator;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -15,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Utility.ShooterParameters;
 import frc.robot.subsystems.Drive.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Drive.DriveConstants;
 import frc.robot.subsystems.Hood.HoodSubsystem;
 import frc.robot.subsystems.Indexer.IndexerConstants;
 import frc.robot.subsystems.Indexer.KickerSubsystem;
@@ -158,6 +164,80 @@ public class AutoAim {
         };
     }
 
+    private ShooterParameters getCompensatedAimingParameters() {
+        Pose2d estimatedPose = drivetrain.getPose();
+        ChassisSpeeds velocity = drivetrain.getRobotRelativeChassisSpeeds();
+        estimatedPose = estimatedPose.exp(new Twist2d(
+                velocity.vxMetersPerSecond * Constants.latencyCompensation,
+                velocity.vyMetersPerSecond * Constants.latencyCompensation,
+                velocity.omegaRadiansPerSecond * Constants.latencyCompensation));
+
+        Pose2d turretPose = estimatedPose.transformBy(DriveConstants.shooterOffset);
+        Translation2d target = drivetrain.getHubPose().getTranslation();
+        double targetDistance = target.getDistance(turretPose.getTranslation());
+
+
+        Translation2d turretVelocity = new Translation2d(
+                        drivetrain.getFieldRelativeChassisSpeeds().vxMetersPerSecond, drivetrain.getFieldRelativeChassisSpeeds().vyMetersPerSecond)
+                .plus(new Translation2d(
+                        drivetrain.getRobotRelativeChassisSpeeds().omegaRadiansPerSecond
+                                * DriveConstants.shooterOffset.getTranslation().getNorm(),
+                        estimatedPose.getRotation().rotateBy(Rotation2d.kCW_90deg)));
+
+        double timeOfFlight = ScoringLookupTable.get(targetDistance).getTimeOfFlight();
+        Pose2d lookaheadPose = turretPose;
+        double lookaheadDistance = targetDistance;
+
+        for (int i = 0; i < 20; i++) {
+            double offsetX = turretVelocity.getX() * timeOfFlight;
+            double offsetY = turretVelocity.getY() * timeOfFlight;
+            lookaheadPose = new Pose2d(
+                    turretPose.getTranslation().plus(new Translation2d(offsetX, offsetY)), turretPose.getRotation());
+            lookaheadDistance = target.getDistance(lookaheadPose.getTranslation());
+            timeOfFlight = ScoringLookupTable.get(lookaheadDistance).getTimeOfFlight();
+        }
+
+
+        return ScoringLookupTable.get(lookaheadDistance);
+    }
+
+    private double getCompensatedTurret() {
+        Pose2d estimatedPose = drivetrain.getPose();
+        ChassisSpeeds velocity = drivetrain.getRobotRelativeChassisSpeeds();
+        estimatedPose = estimatedPose.exp(new Twist2d(
+                velocity.vxMetersPerSecond * Constants.latencyCompensation,
+                velocity.vyMetersPerSecond * Constants.latencyCompensation,
+                velocity.omegaRadiansPerSecond * Constants.latencyCompensation));
+
+        Pose2d turretPose = estimatedPose.transformBy(DriveConstants.shooterOffset);
+        Translation2d target = drivetrain.getHubPose().getTranslation();
+        double targetDistance = target.getDistance(turretPose.getTranslation());
+
+
+        Translation2d turretVelocity = new Translation2d(
+                        drivetrain.getFieldRelativeChassisSpeeds().vxMetersPerSecond, drivetrain.getFieldRelativeChassisSpeeds().vyMetersPerSecond)
+                .plus(new Translation2d(
+                        drivetrain.getRobotRelativeChassisSpeeds().omegaRadiansPerSecond
+                                * DriveConstants.shooterOffset.getTranslation().getNorm(),
+                        estimatedPose.getRotation().rotateBy(Rotation2d.kCW_90deg)));
+
+        double timeOfFlight = ScoringLookupTable.get(targetDistance).getTimeOfFlight();
+        Pose2d lookaheadPose = turretPose;
+        double lookaheadDistance = targetDistance;
+
+        for (int i = 0; i < 20; i++) {
+            double offsetX = turretVelocity.getX() * timeOfFlight;
+            double offsetY = turretVelocity.getY() * timeOfFlight;
+            lookaheadPose = new Pose2d(
+                    turretPose.getTranslation().plus(new Translation2d(offsetX, offsetY)), turretPose.getRotation());
+            lookaheadDistance = target.getDistance(lookaheadPose.getTranslation());
+            timeOfFlight = ScoringLookupTable.get(lookaheadDistance).getTimeOfFlight();
+        }
+
+        final Pose2d finalLookaheadPose = lookaheadPose;
+        return turret.getDesiredTurretAngle(() -> target.minus(finalLookaheadPose.getTranslation()).getAngle().getDegrees(), drivetrain::getShooterPose).getAsDouble();
+    }
+
     public Command generateTurretScoreCommand() {
         return turret.getTurretPIDCommand(getAssumedTurretAngle());
     }
@@ -180,9 +260,9 @@ public class AutoAim {
     
     public Command generateSOTMScoringCommand() {
         return new ParallelCommandGroup(
-            turret.getTurretPIDCommand(() -> getScoringSOTMTurret().get()),
-            hood.getHoodPIDCommand(() -> getScoringSOTMParams().get().hoodAngleDegrees),
-            shooter.getShooterPIDCommand(() -> getScoringSOTMParams().get().shooterSpeedRPM)
+            turret.getTurretPIDCommand(() -> getCompensatedTurret()),
+            hood.getHoodPIDCommand(() -> getCompensatedAimingParameters().hoodAngleDegrees),
+            shooter.getShooterPIDCommand(() -> getCompensatedAimingParameters().shooterSpeedRPM)
         );
     }
 }

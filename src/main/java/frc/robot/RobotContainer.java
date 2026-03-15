@@ -104,9 +104,9 @@ public class RobotContainer {
             autoAimCommandFactory.generateTurretIdleCommand()
             .alongWith(autoAimCommandFactory.generateHoodIdleCommand())
             .alongWith(autoAimCommandFactory.generateAssumedShooterCommand())
-            .alongWith(Commands.run(() -> spindexer.setSpindexerVoltage(8), spindexer))
+            .alongWith(Commands.run(() -> spindexer.setSpindexerVoltage(12), spindexer))
             .alongWith(Commands.run(() -> kicker.setSpindexerVoltage(12), kicker))
-            .alongWith(Commands.waitSeconds(2.0).andThen(Commands.run(() -> pivot.usePivotPID(12.0 / 82.74 * 360.0), pivot)))
+            .alongWith(Commands.waitSeconds(3.0).andThen(Commands.run(() -> pivot.usePivotPID(12.0 / 82.74 * 360.0), pivot)))
             .withTimeout(4.0)
             .finallyDo(() -> {spindexer.setSpindexerVoltage(0); kicker.setSpindexerVoltage(0);}));
             
@@ -173,6 +173,8 @@ public class RobotContainer {
                     .withVelocityY(-driverController.getLeftX() * MaxSpeed / 3) // Drive left with negative X (left)
                     .withRotationalRate(0) // Drive counterclockwise with negative X (left)
         ));
+        driverController.rightBumper().onTrue(Commands.run(() -> wheels.setWheelVoltage(10), wheels));
+        driverController.rightBumper().onFalse(Commands.run(() -> wheels.setWheelVoltage(0), wheels));
         driverController.rightBumper().onFalse(autoAimCommandFactory.generateTurretIdleCommand());
         driverController.rightBumper().onFalse(shooter.getShooterPIDCommand(() -> ShooterConstants.shooterIdleRPM));
         driverController.leftBumper().onTrue(Commands.run(() -> wheels.setWheelVoltage(12), wheels));
@@ -183,7 +185,7 @@ public class RobotContainer {
         driverController.leftTrigger().onTrue(Commands.run(() -> wheels.setWheelVoltage(10), wheels));
         driverController.leftTrigger().onFalse(Commands.run(() -> wheels.setWheelVoltage(0), wheels));
         driverController.leftTrigger().onTrue(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotDeployPosition), pivot));
-        driverController.leftTrigger().onTrue(autoAimCommandFactory.generateTurretIdleCommand());
+        // driverController.leftTrigger().onTrue(autoAimCommandFactory.generateTurretIdleCommand());
         driverController.povRight().whileTrue(new PathPlannerAuto("Middle"));
         driverController.povDown().whileTrue(new PathPlannerAuto("OutpostClimb"));
         driverController.povLeft().whileTrue(drivetrain.applyRequest(() -> drivetrain.commandChassisSpeeds(new ChassisSpeeds(1.0, 0, 0))));
