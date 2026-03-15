@@ -11,7 +11,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.RobotController;
@@ -60,7 +59,6 @@ public class ClimberSubsystem extends SubsystemBase {
         climbMotor.setPosition(60);
     }
 
-    @Logged
     public double getClimberPosition() {
         return climbMotor.getPosition().getValueAsDouble();
     }

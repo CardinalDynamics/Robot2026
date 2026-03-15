@@ -14,8 +14,6 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.RobotController;
@@ -62,12 +60,13 @@ public class ShooterSubsystem extends SubsystemBase {
         motorConfigRight.MotionMagic.MotionMagicAcceleration = ShooterConstants.MotionMagicAcceleration;
 
         motorConfigRight.MotorOutput.Inverted = ShooterConstants.shooterMotorRightInvertedValue;
+        motorConfigRight.CurrentLimits.SupplyCurrentLimit = 30;
+        motorConfigLeft.CurrentLimits.SupplyCurrentLimit = 30;
         motorConfigLeft.MotorOutput.Inverted = ShooterConstants.shooterMotorLeftInvertedValue;
 
         // apply config
         shooterMotorLeft.getConfigurator().apply(motorConfigLeft);
         shooterMotorRight.getConfigurator().apply(motorConfigRight);
-
         // set some sim settings
         var shooterMotorSim = shooterMotorLeft.getSimState();
         shooterMotorSim.Orientation = ChassisReference.CounterClockwise_Positive;
@@ -76,7 +75,6 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotorLeft.setControl(new Follower(ShooterConstants.shooterMotorRightCANID, MotorAlignmentValue.Opposed));
     }
 
-    @Logged
     public double getDesiredShooterRPM() {
         return desiredShooterSpeed * 60.0;
     }
@@ -90,7 +88,6 @@ public class ShooterSubsystem extends SubsystemBase {
     }
     
     // get the rotational velocity of the shooter wheels in RPM
-    @Logged
     public double getShooterSpeed() {
         return shooterMotorRight.getVelocity().getValueAsDouble() * 60.0;
     }

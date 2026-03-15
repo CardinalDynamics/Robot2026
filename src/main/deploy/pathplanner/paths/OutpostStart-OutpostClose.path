@@ -3,55 +3,55 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.746188888888888,
-        "y": 3.840111111111111
+        "x": 3.582922222222222,
+        "y": 0.6
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.922877777777778,
-        "y": 1.959433333333333
+        "x": 4.661272356950389,
+        "y": 0.6088491520050706
       },
       "isLocked": false,
-      "linkedName": "DepotMiddleClose"
+      "linkedName": "OutpostStart"
     },
     {
       "anchor": {
-        "x": 6.1609985734586745,
-        "y": 7.4572753209700435
+        "x": 5.902100000000001,
+        "y": 0.5562333333333322
       },
       "prevControl": {
-        "x": 7.519677777777778,
-        "y": 7.6112111111111105
+        "x": 5.939990497257865,
+        "y": 0.3091213946950872
       },
       "nextControl": {
-        "x": 5.466276607160309,
-        "y": 7.378564633067752
+        "x": 5.6779777777777785,
+        "y": 2.0178999999999996
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.5862054208273886,
-        "y": 7.4572753209700435
+        "x": 5.811654778887304,
+        "y": 4.00265335235378
       },
       "prevControl": {
-        "x": 4.582482168330956,
-        "y": 7.379643366619116
+        "x": 6.055265889998414,
+        "y": 1.9855533523537798
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "DepotTrench"
+      "linkedName": "OutpostClose"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.35020746887966114,
-      "rotationDegrees": -123.78125922935385
+      "waypointRelativePos": 0.9975103734439615,
+      "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 0.9543568464730253,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 1.2730290456431437,
+      "rotationDegrees": -90.0
     }
   ],
   "constraintZones": [],
@@ -66,14 +66,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 2.0,
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": "DepotTwo",
+  "folder": null,
   "idealStartingState": {
-    "velocity": 2.0,
-    "rotation": 90.0
+    "velocity": 0,
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

@@ -59,6 +59,7 @@ public class HoodSubsystem extends SubsystemBase {
         slot0.kA = HoodConstants.kA;
         motorConfig.MotionMagic.MotionMagicCruiseVelocity = HoodConstants.MotionMagicCruiseVelocity;
         motorConfig.MotionMagic.MotionMagicAcceleration = HoodConstants.MotionMagicAcceleration;
+        motorConfig.CurrentLimits.SupplyCurrentLimit = 40;
 
         // apply config
         hoodMotor.getConfigurator().apply(motorConfig);
@@ -78,7 +79,6 @@ public class HoodSubsystem extends SubsystemBase {
         return hoodMotor.getPosition().getValueAsDouble() * 360.0 / HoodConstants.gearRatio;
     }
 
-    @Logged
     public double getDesiredHoodDegrees() {
         return desiredHoodPosition * 360.0 / HoodConstants.gearRatio;
     }

@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "DepotStart-DepotMiddle"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "DepotMiddle-DepotTrench"
+            "pathName": "New Path"
           }
         }
       ]

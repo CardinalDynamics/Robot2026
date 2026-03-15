@@ -18,7 +18,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -65,6 +64,7 @@ public class TurretSubsystem extends SubsystemBase {
         slot0.kA = TurretConstants.kA;
         motorConfig.MotionMagic.MotionMagicCruiseVelocity = TurretConstants.MotionMagicCruiseVelocity;
         motorConfig.MotionMagic.MotionMagicAcceleration = TurretConstants.MotionMagicAcceleration;
+        motorConfig.CurrentLimits.SupplyCurrentLimit = 40;
         // apply config
         turretMotor.getConfigurator().apply(motorConfig);
 
@@ -82,7 +82,6 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     // get the position of the turret in degrees
-    @Logged
     public double getTurretDegrees() {
         return turretMotor.getPosition().getValueAsDouble() * 360.0 / TurretConstants.gearRatio;
     }

@@ -16,7 +16,6 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -157,8 +156,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        questNav.setPose(new Pose3d());
-        seedFieldCentric(new Rotation2d(Units.degreesToRadians(180)));
+        resetPose(new Pose2d());
         configureAutoBuilder();
         setAllianceTargets();
     }
@@ -185,8 +183,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        questNav.setPose(new Pose3d());
-        seedFieldCentric(new Rotation2d(Units.degreesToRadians(180)));
+        resetPose(new Pose2d());
         configureAutoBuilder();
         setAllianceTargets();
     }
@@ -221,8 +218,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        questNav.setPose(new Pose3d());
-        seedFieldCentric(new Rotation2d(Units.degreesToRadians(180)));
+        resetPose(new Pose2d());
         configureAutoBuilder();
         setAllianceTargets();
     }
@@ -270,41 +266,44 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return run(() -> this.setControl(request.get()));
     }
 
-    @Logged
     public Pose2d getPose() {
         return getState().Pose;
     }
 
+    @Override
     public void resetPose(Pose2d pose) {
-        getState().Pose = pose;
+        super.resetPose(pose);
         questNav.setPose(new Pose3d(pose).transformBy(DriveConstants.ROBOT_TO_QUEST));
     }
 
-    @Logged
     public ChassisSpeeds getRobotRelativeChassisSpeeds() {
         return getState().Speeds;
     }
 
-    @Logged
     public Pose2d getShooterPose() {
         return getPose().transformBy(DriveConstants.shooterOffset);
     }
 
-    @Logged
     public boolean questIsTracking() {
         return questNav.isTracking();
     }
 
     public void setAllianceTargets() {
         var alliance = DriverStation.getAlliance();
-        if (alliance.get() == DriverStation.Alliance.Red) {
-            leftPassingPose = Constants.redLeftPassTarget;
-            rightPassingPose = Constants.redRightPassTarget;
-            allianceHubPose = Constants.redHubPose;
+        if (alliance.isPresent()) {
+            if (alliance.get() == DriverStation.Alliance.Red) {
+                leftPassingPose = Constants.redLeftPassTarget;
+                rightPassingPose = Constants.redRightPassTarget;
+                allianceHubPose = Constants.redHubPose;
         } else {
             leftPassingPose = Constants.blueLeftPassTarget;
             rightPassingPose = Constants.blueRightPassTarget;
             allianceHubPose = Constants.blueHubPose;
+        }
+        } else {
+            leftPassingPose = Constants.redLeftPassTarget;
+            rightPassingPose = Constants.redRightPassTarget;
+            allianceHubPose = Constants.redHubPose;
         }
     }
 
@@ -334,7 +333,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         };
     }
 
-    @Logged
     public Pose2d logAssumedTarget() {
         Pose2d target = allianceHubPose;
         var alliance = DriverStation.getAlliance();
@@ -367,16 +365,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return rightPassingPose;
     }
 
+    @Logged
     public Pose2d getHubPose() {
         return allianceHubPose;
     }
 
-    @Logged
     public Translation2d getRobotVelocityVector() {
-        return new Translation2d(getState().Speeds.vxMetersPerSecond, getState().Speeds.vyMetersPerSecond);
+        return new Translation2d(getState().Speeds.vxMetersPerSecond, getState().Speeds.vyMetersPerSecond).rotateBy(getPose().getRotation());
     }
 
-    @Logged
     public double distanceToGoal() {
         return getAssumedTarget().get().getTranslation().getDistance(getShooterPose().getTranslation());
     }
@@ -432,13 +429,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
+        setAllianceTargets();
+
         questNav.commandPeriodic();
         PoseFrame[] questFrames = questNav.getAllUnreadPoseFrames();
 
         // Loop over the pose data frames and send them to the pose estimator
         for (PoseFrame questFrame : questFrames) {
             // Make sure the Quest was tracking the pose for this frame
-            if (true) {
+            if (questFrame.isTracking()) {
                 // Get the pose of the Quest
                 Pose3d questPose = questFrame.questPose3d();
                 // Get timestamp for when the data was sent

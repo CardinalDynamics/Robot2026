@@ -11,7 +11,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,6 +26,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         SpindexerMotor = new SparkMax(IndexerConstants.spindexerMotorCANID, MotorType.kBrushless);
         motorConfig.idleMode(IdleMode.kBrake);
         motorConfig.inverted(true);
+        motorConfig.smartCurrentLimit(80);
         SpindexerMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         controller = new ProfiledPIDController(IndexerConstants.kSpindexerP, IndexerConstants.kSpindexerI, IndexerConstants.kSpindexerD,
             new Constraints(IndexerConstants.SpindexerMaxVelocity, IndexerConstants.SpindexerMaxAcceleration));

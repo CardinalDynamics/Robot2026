@@ -12,12 +12,15 @@ public class ScoringLookupTable {
     private static final NavigableMap<Double, ShooterParameters> table = new TreeMap<>();
 
     static {
-        table.put(2.3087, new ShooterParameters(18.0, 2950, 1.1));
-        table.put(2.843, new ShooterParameters(18.721, 3300, 1.35));
-        table.put(4.1368, new ShooterParameters(20, 3700, 1.5));
-        table.put(5.274, new ShooterParameters(22.0, 4870, 1.76));
+        // table.put(2.3087, new ShooterParameters(18.0, 2950, 1.1));
+        // table.put(2.843, new ShooterParameters(18.721, 3300, 1.35));
+        // table.put(4.1368, new ShooterParameters(20, 3700, 1.5));
+        table.put(2.3087, new ShooterParameters(18.0, 2750, 1.1));
+        table.put(2.843, new ShooterParameters(18.721, 3200, 1.35));
+        table.put(4.1368, new ShooterParameters(20, 3567, 1.5));
+        // table.put(5.274, new ShooterParameters(22.0, 4870, 1.76));
         // tof not tuned
-        table.put(5.9396, new ShooterParameters(22.0, 4900, 2.0));
+        table.put(5.648, new ShooterParameters(22.0, 4267, 2.0));
         table.put(9.18, new ShooterParameters(36.0, 5950, 2.1));
     }
 

@@ -11,8 +11,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.RobotController;
@@ -52,6 +50,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
         slot0.kA = IntakeConstants.kPivotA;
         motorConfig.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.PivotMotionMagicCruiseVelocity;
         motorConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.PivotMotionMagicAcceleration;
+        motorConfig.CurrentLimits.SupplyCurrentLimit = 40;
 
         // apply config
         pivotMotor.getConfigurator().apply(motorConfig);
@@ -66,7 +65,6 @@ public class IntakePivotSubsystem extends SubsystemBase {
     }
 
     // get the position of the pivot in degrees
-    @Logged
     public double getPivotDegrees() {
         return pivotMotor.getPosition().getValueAsDouble() * 360.0 / IntakeConstants.pivotGearRatio;
     }
