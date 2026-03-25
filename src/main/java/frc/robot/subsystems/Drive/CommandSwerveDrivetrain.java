@@ -337,30 +337,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         };
     }
 
-    public Pose2d logAssumedTarget() {
-        Pose2d target = allianceHubPose;
-        var alliance = DriverStation.getAlliance();
-        if (alliance.get() == DriverStation.Alliance.Red) {
-            if (getPose().getX() > Constants.redAllianceZoneCutoffMeters) {
-                target = allianceHubPose;
-            } else if (getPose().getY() < Constants.horizontalCenterLine) {
-                target = leftPassingPose;
-            } else {
-                target = rightPassingPose;
-            }
-        } else if (getPose().getX() < Constants.blueAllianceZoneCutoffMeters) {
-                target = allianceHubPose;
-        }
-        else {
-            if (getPose().getY() < Constants.horizontalCenterLine) {
-                target = rightPassingPose;
-            } else {
-                target = leftPassingPose;
-        }
-        }
-        return target;
-    }
-
     public Pose2d getLeftPassingPose() {
         return leftPassingPose;
     }
@@ -378,6 +354,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return new Translation2d(getState().Speeds.vxMetersPerSecond, getState().Speeds.vyMetersPerSecond).rotateBy(getPose().getRotation());
     }
 
+    @Logged
     public double distanceToGoal() {
         return getAssumedTarget().get().getTranslation().getDistance(getShooterPose().getTranslation());
     }
@@ -408,7 +385,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return m_sysIdRoutineToApply.dynamic(direction);
     }
 
-    @Logged
     public Pose2d getQuestPose() {
         return questPose;
     }
@@ -461,7 +437,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
         if (limelightMeasurement.tagCount >= 2) {  // Only trust measurement if we see multiple tags
             addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds, DriveConstants.LIMELIGHT_STD_DEVS);
-            questNav.setPose(new Pose3d(limelightMeasurement.pose).transformBy(DriveConstants.ROBOT_TO_QUEST));
+        }
+
+        LimelightHelpers.PoseEstimate secondMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-cal");
+        if (secondMeasurement.tagCount >= 2) {  // Only trust measurement if we see multiple tags
+            addVisionMeasurement(secondMeasurement.pose, secondMeasurement.timestampSeconds, DriveConstants.LIMELIGHT_STD_DEVS);
         }
     }
 

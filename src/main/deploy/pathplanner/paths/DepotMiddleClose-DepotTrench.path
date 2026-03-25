@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.746188888888888,
-        "y": 3.840111111111111
+        "x": 5.9927960057061345,
+        "y": 3.8862054208273893
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.922877777777778,
-        "y": 1.959433333333333
+        "x": 9.169484894595024,
+        "y": 2.0055276430496116
       },
       "isLocked": false,
       "linkedName": "DepotMiddleClose"
@@ -58,7 +58,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 3.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,

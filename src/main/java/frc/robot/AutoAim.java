@@ -45,21 +45,6 @@ public class AutoAim {
         this.kicker = kicker;
     }
 
-    public BooleanSupplier isReadyToShoot(BooleanSupplier a, BooleanSupplier b, BooleanSupplier c) {
-        return () -> {
-            return a.getAsBoolean() && b.getAsBoolean() && c.getAsBoolean();
-        };
-    }
-
-    public DoubleSupplier getSpindexerSpeed(BooleanSupplier a, BooleanSupplier b, BooleanSupplier c) {
-        return () -> {
-            double rpm = 0;
-            if (isReadyToShoot(a, b, c).getAsBoolean()) {
-                rpm = IndexerConstants.SpindexSpeed;
-            }
-            return rpm;
-        };
-    }
 
     public Supplier<ShooterParameters> getScoringShooterParamaters() {
         return () -> {
@@ -79,86 +64,19 @@ public class AutoAim {
 
     public Supplier<ShooterParameters> getAssumedShooterParamaters() {
         return () -> {
-            ShooterParameters params = ScoringLookupTable.get(drivetrain.getShooterPose().getTranslation()
-                .getDistance(drivetrain.getHubPose().getTranslation()));
+            ShooterParameters params = getCompensatedAimingParameters();
             if (drivetrain.getAssumedTarget().get() != drivetrain.getHubPose()) {
-                params = getPassingSOTMParams().get();
+                params = getCompensatedPassingParameters();
             }
             return params;
         };
     }
 
-    public Supplier<ShooterParameters> getScoringSOTMParams() {
-        return () -> {
-            Translation2d futurePos = drivetrain.getShooterPose().getTranslation().plus(drivetrain.getRobotVelocityVector().times(Constants.latencyCompensation));
-            Translation2d toGoal = drivetrain.getHubPose().getTranslation().minus(futurePos);
-            double distance = toGoal.getNorm();
-            Translation2d targetDirection = toGoal.div(distance);
-            ShooterParameters baseline = ScoringLookupTable.get(distance);
-            double baselineVelocity = distance / baseline.getTimeOfFlight();
-            Translation2d targetVelocity = targetDirection.times(baselineVelocity);
-            Translation2d shotVelocity = targetVelocity.minus(drivetrain.getRobotVelocityVector());
-            double turretAngle = turret.getDesiredTurretAngle(() -> shotVelocity.getAngle().getDegrees(), drivetrain::getShooterPose).getAsDouble();
-            double requiredVelocity = shotVelocity.getNorm();
-            double effectiveDistance = ScoringLookupTable.velocityToEffectiveDistance(requiredVelocity);
-            ShooterParameters newParams = ScoringLookupTable.get(effectiveDistance);
-            return newParams;
-        };
-    }
-
-    public Supplier<ShooterParameters> getPassingSOTMParams() {
-        return () -> {
-            Translation2d futurePos = drivetrain.getShooterPose().getTranslation().plus(drivetrain.getRobotVelocityVector().times(Constants.latencyCompensation));
-            Translation2d toGoal = drivetrain.getAssumedTarget().get().getTranslation().minus(futurePos);
-            double distance = toGoal.getNorm();
-            Translation2d targetDirection = toGoal.div(distance);
-            ShooterParameters baseline = PassingLookupTable.get(distance);
-            double baselineVelocity = distance / baseline.getTimeOfFlight();
-            Translation2d targetVelocity = targetDirection.times(baselineVelocity);
-            Translation2d shotVelocity = targetVelocity.minus(drivetrain.getRobotVelocityVector());
-            double turretAngle = turret.getDesiredTurretAngle(() -> shotVelocity.getAngle().getDegrees(), drivetrain::getShooterPose).getAsDouble();
-            double requiredVelocity = shotVelocity.getNorm();
-            double effectiveDistance = PassingLookupTable.velocityToEffectiveDistance(requiredVelocity);
-            ShooterParameters newParams = PassingLookupTable.get(effectiveDistance);
-            return newParams;
-        };
-    }
-
-    public Supplier<Double> getScoringSOTMTurret() {
-        return () -> {
-            Translation2d futurePos = drivetrain.getShooterPose().getTranslation().plus(drivetrain.getRobotVelocityVector().times(Constants.latencyCompensation));
-            Translation2d toGoal = drivetrain.getHubPose().getTranslation().minus(futurePos);
-            double distance = toGoal.getNorm();
-            Translation2d targetDirection = toGoal.div(distance);
-            ShooterParameters baseline = ScoringLookupTable.get(distance);
-            double baselineVelocity = distance / baseline.getTimeOfFlight();
-            Translation2d targetVelocity = targetDirection.times(baselineVelocity);
-            Translation2d shotVelocity = targetVelocity.minus(drivetrain.getRobotVelocityVector());
-            double turretAngle = turret.getDesiredTurretAngle(() -> shotVelocity.getAngle().getDegrees(), drivetrain::getShooterPose).getAsDouble();
-            return turretAngle;
-        };
-    }
-
-    public Supplier<Double> getPassingSOTMTurret() {
-        return () -> {
-            Translation2d futurePos = drivetrain.getShooterPose().getTranslation().plus(drivetrain.getRobotVelocityVector().times(Constants.latencyCompensation));
-            Translation2d toGoal = drivetrain.getAssumedTarget().get().getTranslation().minus(futurePos);
-            double distance = toGoal.getNorm();
-            Translation2d targetDirection = toGoal.div(distance);
-            ShooterParameters baseline = PassingLookupTable.get(distance);
-            double baselineVelocity = distance / baseline.getTimeOfFlight();
-            Translation2d targetVelocity = targetDirection.times(baselineVelocity);
-            Translation2d shotVelocity = targetVelocity.minus(drivetrain.getRobotVelocityVector());
-            double turretAngle = turret.getDesiredTurretAngle(() -> shotVelocity.getAngle().getDegrees(), drivetrain::getShooterPose).getAsDouble();
-            return turretAngle;
-        };
-    }
-
     public DoubleSupplier getAssumedTurretAngle() {
         return () -> {
-            Double angle = turret.getDesiredTurretAngle(drivetrain::getHubPose, drivetrain::getShooterPose).getAsDouble();
+            Double angle = getCompensatedPassingTurret();
             if (drivetrain.getAssumedTarget().get() != drivetrain.getHubPose()) {
-                angle = getPassingSOTMTurret().get();
+                angle = getCompensatedPassingTurret();
             }
             return angle;
         };
@@ -188,7 +106,7 @@ public class AutoAim {
         Pose2d lookaheadPose = turretPose;
         double lookaheadDistance = targetDistance;
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 10; i++) {
             double offsetX = turretVelocity.getX() * timeOfFlight;
             double offsetY = turretVelocity.getY() * timeOfFlight;
             lookaheadPose = new Pose2d(
@@ -225,13 +143,85 @@ public class AutoAim {
         Pose2d lookaheadPose = turretPose;
         double lookaheadDistance = targetDistance;
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 10; i++) {
             double offsetX = turretVelocity.getX() * timeOfFlight;
             double offsetY = turretVelocity.getY() * timeOfFlight;
             lookaheadPose = new Pose2d(
                     turretPose.getTranslation().plus(new Translation2d(offsetX, offsetY)), turretPose.getRotation());
             lookaheadDistance = target.getDistance(lookaheadPose.getTranslation());
             timeOfFlight = ScoringLookupTable.get(lookaheadDistance).getTimeOfFlight();
+        }
+
+        final Pose2d finalLookaheadPose = lookaheadPose;
+        return turret.getDesiredTurretAngle(() -> target.minus(finalLookaheadPose.getTranslation()).getAngle().getDegrees(), drivetrain::getShooterPose).getAsDouble();
+    }
+
+    private ShooterParameters getCompensatedPassingParameters() {
+        Pose2d estimatedPose = drivetrain.getPose();
+        ChassisSpeeds velocity = drivetrain.getRobotRelativeChassisSpeeds();
+        estimatedPose = estimatedPose.exp(new Twist2d(
+                velocity.vxMetersPerSecond * Constants.latencyCompensation,
+                velocity.vyMetersPerSecond * Constants.latencyCompensation,
+                velocity.omegaRadiansPerSecond * Constants.latencyCompensation));
+
+        Pose2d turretPose = estimatedPose.transformBy(DriveConstants.shooterOffset);
+        Translation2d target = drivetrain.getAssumedTarget().get().getTranslation();
+        double targetDistance = target.getDistance(turretPose.getTranslation());
+
+        Translation2d turretVelocity = new Translation2d(
+                        drivetrain.getFieldRelativeChassisSpeeds().vxMetersPerSecond, drivetrain.getFieldRelativeChassisSpeeds().vyMetersPerSecond)
+                .plus(new Translation2d(
+                        drivetrain.getRobotRelativeChassisSpeeds().omegaRadiansPerSecond
+                                * DriveConstants.shooterOffset.getTranslation().getNorm(),
+                        estimatedPose.getRotation().rotateBy(Rotation2d.kCW_90deg)));
+
+        double timeOfFlight = PassingLookupTable.get(targetDistance).getTimeOfFlight();
+        Pose2d lookaheadPose = turretPose;
+        double lookaheadDistance = targetDistance;
+
+        for (int i = 0; i < 10; i++) {
+            double offsetX = turretVelocity.getX() * timeOfFlight;
+            double offsetY = turretVelocity.getY() * timeOfFlight;
+            lookaheadPose = new Pose2d(
+                    turretPose.getTranslation().plus(new Translation2d(offsetX, offsetY)), turretPose.getRotation());
+            lookaheadDistance = target.getDistance(lookaheadPose.getTranslation());
+            timeOfFlight = PassingLookupTable.get(lookaheadDistance).getTimeOfFlight();
+        }
+
+
+        return PassingLookupTable.get(lookaheadDistance);
+    }
+
+    private double getCompensatedPassingTurret() {
+        Pose2d estimatedPose = drivetrain.getPose();
+        ChassisSpeeds velocity = drivetrain.getRobotRelativeChassisSpeeds();
+        estimatedPose = estimatedPose.exp(new Twist2d(
+                velocity.vxMetersPerSecond * Constants.latencyCompensation,
+                velocity.vyMetersPerSecond * Constants.latencyCompensation,
+                velocity.omegaRadiansPerSecond * Constants.latencyCompensation));
+
+        Pose2d turretPose = estimatedPose.transformBy(DriveConstants.shooterOffset);
+        Translation2d target = drivetrain.getAssumedTarget().get().getTranslation();
+        double targetDistance = target.getDistance(turretPose.getTranslation());
+
+        Translation2d turretVelocity = new Translation2d(
+                        drivetrain.getFieldRelativeChassisSpeeds().vxMetersPerSecond, drivetrain.getFieldRelativeChassisSpeeds().vyMetersPerSecond)
+                .plus(new Translation2d(
+                        drivetrain.getRobotRelativeChassisSpeeds().omegaRadiansPerSecond
+                                * DriveConstants.shooterOffset.getTranslation().getNorm(),
+                        estimatedPose.getRotation().rotateBy(Rotation2d.kCW_90deg)));
+
+        double timeOfFlight = PassingLookupTable.get(targetDistance).getTimeOfFlight();
+        Pose2d lookaheadPose = turretPose;
+        double lookaheadDistance = targetDistance;
+
+        for (int i = 0; i < 10; i++) {
+            double offsetX = turretVelocity.getX() * timeOfFlight;
+            double offsetY = turretVelocity.getY() * timeOfFlight;
+            lookaheadPose = new Pose2d(
+                    turretPose.getTranslation().plus(new Translation2d(offsetX, offsetY)), turretPose.getRotation());
+            lookaheadDistance = target.getDistance(lookaheadPose.getTranslation());
+            timeOfFlight = PassingLookupTable.get(lookaheadDistance).getTimeOfFlight();
         }
 
         final Pose2d finalLookaheadPose = lookaheadPose;

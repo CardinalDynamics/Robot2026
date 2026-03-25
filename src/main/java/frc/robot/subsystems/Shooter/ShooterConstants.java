@@ -23,4 +23,6 @@ public class ShooterConstants {
     public static final double shooterIdleRPM = 500;
 
     public static final double shooterToleranceRPM = 100;
+
+    public static final double shooterRampTimeSeconds = .1;
 }

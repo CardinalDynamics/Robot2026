@@ -3,43 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.192044444444445,
-        "y": 3.654966666666666
+        "x": 7.791269614835947,
+        "y": 4.688402282453637
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.687722222222223,
-        "y": 4.512477777777779
+        "x": 7.403109843081312,
+        "y": 7.056176890156919
       },
       "isLocked": false,
-      "linkedName": "OutpostMiddle"
+      "linkedName": "depotsimple5"
     },
     {
       "anchor": {
-        "x": 3.592666666666667,
-        "y": 0.6244444444444435
+        "x": 3.5991440798858774,
+        "y": 7.483152639087019
       },
       "prevControl": {
-        "x": 9.098074179743222,
-        "y": 0.37982881597717666
+        "x": 6.983733333333333,
+        "y": 7.474788888888888
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "OutpostTrench"
+      "linkedName": "DepotStart"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.3,
-      "rotationDegrees": 40.0
-    },
-    {
-      "waypointRelativePos": 0.55,
-      "rotationDegrees": 90.0
-    },
-    {
-      "waypointRelativePos": 0.8017057569296364,
-      "rotationDegrees": 25.0
+      "waypointRelativePos": 0.7692946058091239,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [],
@@ -54,14 +46,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 0.0
+    "velocity": 0,
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "OutpostTwo",
+  "folder": "DepotSimple",
   "idealStartingState": {
-    "velocity": 2.0,
-    "rotation": -61.76255446183262
+    "velocity": 0,
+    "rotation": 88.7269699799432
   },
   "useDefaultConstraints": true
 }

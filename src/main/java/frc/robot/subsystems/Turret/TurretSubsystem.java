@@ -18,6 +18,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -82,8 +83,13 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     // get the position of the turret in degrees
+    @Logged
     public double getTurretDegrees() {
         return turretMotor.getPosition().getValueAsDouble() * 360.0 / TurretConstants.gearRatio;
+    }
+
+    public boolean turretAtPosition() {
+        return Math.abs(angleError(getTurretDegrees(), desiredPosition)) < 10.0;
     }
 
     public void manualTurret(double input) {
@@ -100,6 +106,13 @@ public class TurretSubsystem extends SubsystemBase {
     // convert angles in (0, 360) to (-180, 180)
     public double normalizeDegrees(double degrees) {
         return (degrees + 180.0) % 360.0 - 180.0;
+    }
+
+    public double angleError(double a, double b) {
+        double error = a - b;
+        error = (error + 180) % 360;
+        if (error < 0) error += 360;
+        return error - 180;
     }
 
     // select the target angle closest to the current angle and within the range of the turret

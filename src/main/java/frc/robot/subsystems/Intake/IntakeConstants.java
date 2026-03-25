@@ -20,7 +20,7 @@ public class IntakeConstants {
     public static final double pivotOffset = 0;
 
     public static final double pivotStowPosiion = 1;
-    public static final double pivotDeployPosition = 25.2 / 82.74 * 360.0;
+    public static final double pivotDeployPosition = 26 / 82.74 * 360.0;
 
     public static final double kWheelP = .5;
     public static final double kWheelI = 0;

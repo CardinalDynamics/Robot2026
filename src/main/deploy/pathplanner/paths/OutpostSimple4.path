@@ -3,43 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.192044444444445,
-        "y": 3.654966666666666
+        "x": 7.778330955777461,
+        "y": 3.213395149786021
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.687722222222223,
-        "y": 4.512477777777779
+        "x": 7.040827389443652,
+        "y": 0.6515406562054196
       },
       "isLocked": false,
-      "linkedName": "OutpostMiddle"
+      "linkedName": "OutpostSimple2"
     },
     {
       "anchor": {
-        "x": 3.592666666666667,
-        "y": 0.6244444444444435
+        "x": 3.5991440798858774,
+        "y": 0.6256633380884444
       },
       "prevControl": {
-        "x": 9.098074179743222,
-        "y": 0.37982881597717666
+        "x": 6.225691868758917,
+        "y": 0.418644793152639
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "OutpostTrench"
+      "linkedName": "OutpostStart"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.3,
-      "rotationDegrees": 40.0
-    },
-    {
-      "waypointRelativePos": 0.55,
-      "rotationDegrees": 90.0
-    },
-    {
-      "waypointRelativePos": 0.8017057569296364,
-      "rotationDegrees": 25.0
+      "waypointRelativePos": 0.6972281449893356,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [],
@@ -54,14 +46,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 0.0
+    "velocity": 0,
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "OutpostTwo",
+  "folder": "OutpostSimple",
   "idealStartingState": {
-    "velocity": 2.0,
-    "rotation": -61.76255446183262
+    "velocity": 0,
+    "rotation": -89.18154453831139
   },
   "useDefaultConstraints": true
 }
