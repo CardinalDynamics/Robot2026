@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.802266666666666,
-        "y": 5.233566666666666
+        "x": 7.792522222222221,
+        "y": 5.097144444444443
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.480700000000001,
-        "y": 7.260411111111113
+        "x": 7.412488888888889,
+        "y": 7.211688888888889
       },
       "isLocked": false,
       "linkedName": "DepotSimple"
     },
     {
       "anchor": {
-        "x": 3.5991440798858774,
-        "y": 7.483152639087019
+        "x": 3.923977777777778,
+        "y": 7.465044444444444
       },
       "prevControl": {
-        "x": 6.983733333333333,
-        "y": 7.474788888888888
+        "x": 5.6779777777777785,
+        "y": 7.572233333333333
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "DepotStart"
+      "linkedName": "DepotShoot"
     }
   ],
   "rotationTargets": [

@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5991440798858774,
-        "y": 7.483152639087019
+        "x": 3.923977777777778,
+        "y": 7.465044444444444
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.3513552068473595,
-        "y": 7.5996005706134095
+        "x": 7.246833333333334,
+        "y": 7.3968333333333325
       },
       "isLocked": false,
-      "linkedName": "DepotStart"
+      "linkedName": "DepotShoot"
     },
     {
       "anchor": {
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.19004149377594012,
+      "waypointRelativePos": 0.2,
       "rotationDegrees": 180.0
     }
   ],

@@ -15,16 +15,24 @@ public class ScoringLookupTable {
         // table.put(2.3087, new ShooterParameters(18.0, 2950, 1.1));
         // table.put(2.843, new ShooterParameters(18.721, 3300, 1.35));
         // table.put(4.1368, new ShooterParameters(20, 3700, 1.5));
+        // table.put(1.7113, new ShooterParameters(18.0, 2500, .86));
+        // table.put(2.443, new ShooterParameters(20.0, 2900, 1.166));
+        // table.put(3.65, new ShooterParameters(24.0, 3300, 1.35));
+        // table.put(4.24, new ShooterParameters(27.0, 3500, 1.266));
+        // table.put(5.479, new ShooterParameters(30.0, 3800, 1.4));
+        // table.put(6.59, new ShooterParameters(34.0, 4200, 1.266));
+        // table.put(9.18, new ShooterParameters(36.0, 5950, 1.4));
         table.put(1.7113, new ShooterParameters(18.0, 2500, .86));
         table.put(2.443, new ShooterParameters(20.0, 2900, 1.166));
-        table.put(3.65, new ShooterParameters(24.0, 3300, 1.35));
-        table.put(4.24, new ShooterParameters(27.0, 3500, 1.266));
-        table.put(5.479, new ShooterParameters(30.0, 3800, 1.4));
-        table.put(6.59, new ShooterParameters(34.0, 4200, 1.266));
+        table.put(3.65, new ShooterParameters(24.0, 3200, 1.35));
+        table.put(4.24, new ShooterParameters(27.0, 3400, 1.266));
+        table.put(5.479, new ShooterParameters(30.0, 3700, 1.4));
+        table.put(6.59, new ShooterParameters(34.0, 4100, 1.266));
+        table.put(9.18, new ShooterParameters(36.0, 5850, 1.4));
     }
 
     public static ShooterParameters get(double distance) {
-        double clampedDist = MathUtil.clamp(distance, 2.3087, 9.18);
+        double clampedDist = MathUtil.clamp(distance, 1.7113, 9.18);
         var lower = table.floorEntry(clampedDist);
         var upper = table.ceilingEntry(clampedDist);
 

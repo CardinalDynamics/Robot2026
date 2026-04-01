@@ -15,7 +15,6 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -345,7 +344,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return rightPassingPose;
     }
 
-    @Logged
     public Pose2d getHubPose() {
         return allianceHubPose;
     }
@@ -354,7 +352,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return new Translation2d(getState().Speeds.vxMetersPerSecond, getState().Speeds.vyMetersPerSecond).rotateBy(getPose().getRotation());
     }
 
-    @Logged
     public double distanceToGoal() {
         return getAssumedTarget().get().getTranslation().getDistance(getShooterPose().getTranslation());
     }
@@ -435,13 +432,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
 
         LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+        LimelightHelpers.PoseEstimate secondMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-cal");
         if (limelightMeasurement.tagCount >= 2) {  // Only trust measurement if we see multiple tags
             addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds, DriveConstants.LIMELIGHT_STD_DEVS);
+            LimelightHelpers.setLEDMode_ForceBlink("limelight-cal");
         }
-
-        LimelightHelpers.PoseEstimate secondMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-cal");
-        if (secondMeasurement.tagCount >= 2) {  // Only trust measurement if we see multiple tags
+        else if (secondMeasurement.tagCount >= 2) {  // Only trust measurement if we see multiple tags
             addVisionMeasurement(secondMeasurement.pose, secondMeasurement.timestampSeconds, DriveConstants.LIMELIGHT_STD_DEVS);
+            LimelightHelpers.setLEDMode_ForceBlink("limelight-cal");
+        } else {
+            LimelightHelpers.setLEDMode_ForceOff("limelight-cal");
         }
     }
 

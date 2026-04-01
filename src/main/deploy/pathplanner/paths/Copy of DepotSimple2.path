@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 3.5991440798858774,
-        "y": 7.483152639087019
+        "x": 3.923977777777778,
+        "y": 7.465044444444444
       },
       "prevControl": {
-        "x": 6.983733333333333,
-        "y": 7.474788888888888
+        "x": 6.233411111111111,
+        "y": 7.504022222222222
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "DepotStart"
+      "linkedName": "DepotShoot"
     }
   ],
   "rotationTargets": [

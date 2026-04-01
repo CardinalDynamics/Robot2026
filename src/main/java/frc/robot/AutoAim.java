@@ -94,13 +94,16 @@ public class AutoAim {
         Translation2d target = drivetrain.getHubPose().getTranslation();
         double targetDistance = target.getDistance(turretPose.getTranslation());
 
-
+        ChassisSpeeds robotVelocity = drivetrain.getFieldRelativeChassisSpeeds();
+        Translation2d turretPosition = DriveConstants.shooterOffset.getTranslation().rotateBy(estimatedPose.getRotation());
+        Translation2d rotationVelocity = new Translation2d(
+            -turretPosition.getY() * robotVelocity.omegaRadiansPerSecond,
+            turretPosition.getX() * robotVelocity.omegaRadiansPerSecond
+        );
         Translation2d turretVelocity = new Translation2d(
-                        drivetrain.getFieldRelativeChassisSpeeds().vxMetersPerSecond, drivetrain.getFieldRelativeChassisSpeeds().vyMetersPerSecond)
-                .plus(new Translation2d(
-                        drivetrain.getRobotRelativeChassisSpeeds().omegaRadiansPerSecond
-                                * DriveConstants.shooterOffset.getTranslation().getNorm(),
-                        estimatedPose.getRotation().rotateBy(Rotation2d.kCW_90deg)));
+            robotVelocity.vxMetersPerSecond,
+            robotVelocity.vyMetersPerSecond
+        ).plus(rotationVelocity);
 
         double timeOfFlight = ScoringLookupTable.get(targetDistance).getTimeOfFlight();
         Pose2d lookaheadPose = turretPose;
@@ -131,13 +134,16 @@ public class AutoAim {
         Translation2d target = drivetrain.getHubPose().getTranslation();
         double targetDistance = target.getDistance(turretPose.getTranslation());
 
-
+        ChassisSpeeds robotVelocity = drivetrain.getFieldRelativeChassisSpeeds();
+        Translation2d turretPosition = DriveConstants.shooterOffset.getTranslation().rotateBy(estimatedPose.getRotation());
+        Translation2d rotationVelocity = new Translation2d(
+            -turretPosition.getY() * robotVelocity.omegaRadiansPerSecond,
+            turretPosition.getX() * robotVelocity.omegaRadiansPerSecond
+        );
         Translation2d turretVelocity = new Translation2d(
-                        drivetrain.getFieldRelativeChassisSpeeds().vxMetersPerSecond, drivetrain.getFieldRelativeChassisSpeeds().vyMetersPerSecond)
-                .plus(new Translation2d(
-                        drivetrain.getRobotRelativeChassisSpeeds().omegaRadiansPerSecond
-                                * DriveConstants.shooterOffset.getTranslation().getNorm(),
-                        estimatedPose.getRotation().rotateBy(Rotation2d.kCW_90deg)));
+            robotVelocity.vxMetersPerSecond,
+            robotVelocity.vyMetersPerSecond
+        ).plus(rotationVelocity);
 
         double timeOfFlight = ScoringLookupTable.get(targetDistance).getTimeOfFlight();
         Pose2d lookaheadPose = turretPose;
@@ -233,7 +239,7 @@ public class AutoAim {
     }
 
     public Command generateTurretIdleCommand() {
-        return turret.getTurretPIDCommand(getAssumedTurretAngle());
+        return turret.getTurretPIDCommand(getAssumedTurretAngle(), drivetrain::getRobotRelativeChassisSpeeds);
     }
 
     public Command generateHoodScoreCommand() {
@@ -250,7 +256,7 @@ public class AutoAim {
     
     public Command generateSOTMScoringCommand() {
         return new ParallelCommandGroup(
-            turret.getTurretPIDCommand(() -> getCompensatedTurret()),
+            turret.getTurretPIDCommand(() -> getCompensatedTurret(), drivetrain::getFieldRelativeChassisSpeeds),
             hood.getHoodPIDCommand(() -> getCompensatedAimingParameters().hoodAngleDegrees),
             shooter.getShooterPIDCommand(() -> getCompensatedAimingParameters().shooterSpeedRPM)
         );

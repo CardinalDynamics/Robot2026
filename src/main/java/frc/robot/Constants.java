@@ -17,15 +17,15 @@ public final class Constants {
 
     public static final double horizontalCenterLine = Units.inchesToMeters(317.69 / 2.0);
     public static final Pose2d blueHubPose = new Pose2d(Units.inchesToMeters(182.11), horizontalCenterLine, new Rotation2d());
-    public static final Pose2d blueLeftPassTarget = new Pose2d(.1, 6, new Rotation2d());
-    public static final Pose2d blueRightPassTarget = new Pose2d(.1, 2.1, new Rotation2d());
+    public static final Pose2d blueLeftPassTarget = new Pose2d(1.1, 6, new Rotation2d());
+    public static final Pose2d blueRightPassTarget = new Pose2d(1.1, 2.1, new Rotation2d());
     public static final Pose2d redHubPose = new Pose2d(Units.inchesToMeters(651.22 - 182.11), horizontalCenterLine, new Rotation2d());
-    public static final Pose2d redLeftPassTarget = new Pose2d(16.4, 2.1, new Rotation2d());
-    public static final Pose2d redRightPassTarget = new Pose2d(16.4, 6, new Rotation2d());
+    public static final Pose2d redLeftPassTarget = new Pose2d(15.4, 2.1, new Rotation2d());
+    public static final Pose2d redRightPassTarget = new Pose2d(15.4, 6, new Rotation2d());
 
     // TODO tune this and get for both alliances
     public static final double blueAllianceZoneCutoffMeters = Units.inchesToMeters(182.11);
     public static final double redAllianceZoneCutoffMeters = Units.inchesToMeters(651.22 - 182.11);
 
-    public static final double latencyCompensation = .0;
+    public static final double latencyCompensation = .03;
 }

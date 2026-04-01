@@ -114,15 +114,17 @@ public class RobotContainer {
             
         NamedCommands.registerCommand("shootIdle", Commands.runOnce(() -> shooter.setShooterVoltage(5), shooter));
 
-        NamedCommands.registerCommand("turretSet", turret.getTurretPIDCommand(() -> 90.0));
+        NamedCommands.registerCommand("turretFlip", turret.getTurretPIDCommand(() -> 70.0));
+        NamedCommands.registerCommand("turretZero", turret.getTurretPIDCommand(() -> -100.0));
 
         autoChooser.setDefaultOption("none", Commands.waitSeconds(0));
-        autoChooser.addOption("OutpostTwo (OG)", AutoBuilder.buildAuto("OutpostTwo"));
-        autoChooser.addOption("DepotTwo (OG)", AutoBuilder.buildAuto("DepotTwo"));
-        autoChooser.addOption("OutpostSimple (no passback)", AutoBuilder.buildAuto("OutpostSimple"));
-        autoChooser.addOption("DepotSimple (no passback)", AutoBuilder.buildAuto("DepotSimple"));
-        autoChooser.addOption("OutpostMix (og + simple)", AutoBuilder.buildAuto("OutpostMix"));
-        autoChooser.addOption("DepotMix (og + simple)", AutoBuilder.buildAuto("DepotMix"));
+        autoChooser.addOption("Right smash (OG)", AutoBuilder.buildAuto("OutpostTwo"));
+        autoChooser.addOption("Left smash (OG)", AutoBuilder.buildAuto("DepotTwo"));
+        autoChooser.addOption("Right simple (no passback)", AutoBuilder.buildAuto("OutpostSimple"));
+        autoChooser.addOption("Left Simple (no passback)", AutoBuilder.buildAuto("DepotSimple"));
+        autoChooser.addOption("Right mix (og + simple)", AutoBuilder.buildAuto("OutpostMix"));
+        autoChooser.addOption("Left Mix (og + simple)", AutoBuilder.buildAuto("DepotMix"));
+        autoChooser.addOption("sert", AutoBuilder.buildAuto("sert"));
         // autoChooser.addOption("OutpostBump", AutoBuilder.buildAuto("OutpostBump"));
         // autoChooser.addOption("DepotBump", AutoBuilder.buildAuto("DepotBump"));
         autoChooser.addOption("test", AutoBuilder.buildAuto("test"));
@@ -188,8 +190,6 @@ public class RobotContainer {
         driverController.leftTrigger().onFalse(Commands.run(() -> wheels.setWheelVoltage(0), wheels));
         driverController.leftTrigger().onTrue(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotDeployPosition), pivot));
         // driverController.leftTrigger().onTrue(autoAimCommandFactory.generateTurretIdleCommand());
-        driverController.povRight().whileTrue(new PathPlannerAuto("Middle"));
-        driverController.povDown().whileTrue(new PathPlannerAuto("OutpostClimb"));
         driverController.povLeft().whileTrue(drivetrain.applyRequest(() -> drivetrain.commandChassisSpeeds(new ChassisSpeeds(1.0, 0, 0))));
     }
 

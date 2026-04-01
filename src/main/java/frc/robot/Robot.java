@@ -8,6 +8,9 @@ import com.ctre.phoenix6.HootAutoReplay;
 import com.ctre.phoenix6.HootEpilogueBackend;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
 import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
@@ -45,6 +48,7 @@ public class Robot extends TimedRobot {
          }
         });
         Epilogue.bind(this);
+        CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand().ignoringDisable(true));
     }
 
     @Override

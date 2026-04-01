@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.040827389443652,
-        "y": 0.6515406562054196
+        "x": 6.53548888888889,
+        "y": 0.43929999999999936
       },
       "isLocked": false,
       "linkedName": "OutpostSimple2"
@@ -20,12 +20,12 @@
         "y": 0.6256633380884444
       },
       "prevControl": {
-        "x": 6.225691868758917,
-        "y": 0.418644793152639
+        "x": 5.366155555555556,
+        "y": 0.5952111111111105
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "OutpostStart"
+      "linkedName": "OutpostShoot"
     }
   ],
   "rotationTargets": [

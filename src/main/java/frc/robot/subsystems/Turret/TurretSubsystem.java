@@ -11,6 +11,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -22,6 +23,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.RobotController;
@@ -89,7 +91,7 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     public boolean turretAtPosition() {
-        return Math.abs(angleError(getTurretDegrees(), desiredPosition)) < 10.0;
+        return Math.abs(angleError(getTurretDegrees(), desiredPosition)) < 3.0;
     }
 
     public void manualTurret(double input) {
@@ -101,6 +103,27 @@ public class TurretSubsystem extends SubsystemBase {
         return run(() -> turretMotor.setControl(motionMagicRequest.withPosition(
             degreesToTurretAngle(degrees.getAsDouble()) * TurretConstants.gearRatio / 360.0)))
             .alongWith(Commands.run(() -> setDesiredPosition(degrees.getAsDouble())));
+    }
+
+    public Command getTurretPIDCommand(DoubleSupplier degrees, Supplier<ChassisSpeeds> speeds) {
+        return run(() -> {
+            // Convert robot angular velocity (rad/s) → degrees/sec
+            double degPerSec = Math.toDegrees(speeds.get().omegaRadiansPerSecond);
+
+            // Convert degrees/sec → motor rotations/sec
+            double motorRPS = degPerSec / 360.0 * TurretConstants.gearRatio;
+
+            // Feedforward volts using your kV
+            double ffVolts = motorRPS * 0.2; // your kV
+
+            // Clamp for safety so turret doesn't slam
+            ffVolts = MathUtil.clamp(ffVolts, -3.0, 3.0);
+
+            // Command the turret: hold position + apply feedforward
+            turretMotor.setControl(motionMagicRequest.withPosition(
+                degreesToTurretAngle(degrees.getAsDouble()) * TurretConstants.gearRatio / 360.0)
+                .withFeedForward(-ffVolts));
+        }).alongWith(Commands.run(() -> setDesiredPosition(degrees.getAsDouble())));
     }
 
     // convert angles in (0, 360) to (-180, 180)

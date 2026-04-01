@@ -3,16 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.192044444444445,
-        "y": 3.654966666666666
+        "x": 8.650033333333335,
+        "y": 3.2262111111111107
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.687722222222223,
-        "y": 4.512477777777779
+        "x": 6.667018711834384,
+        "y": 5.173531533385492
       },
       "isLocked": false,
       "linkedName": "OutpostMiddle"
+    },
+    {
+      "anchor": {
+        "x": 5.617574893009986,
+        "y": 0.6244444444444435
+      },
+      "prevControl": {
+        "x": 6.76363137846406,
+        "y": 0.839033134862673
+      },
+      "nextControl": {
+        "x": 5.334457615085951,
+        "y": 0.5714332999890097
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
@@ -20,8 +36,8 @@
         "y": 0.6244444444444435
       },
       "prevControl": {
-        "x": 9.098074179743222,
-        "y": 0.37982881597717666
+        "x": 4.628832423746994,
+        "y": 0.6426771649543553
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,16 +46,12 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.3,
-      "rotationDegrees": 40.0
+      "waypointRelativePos": 0.45,
+      "rotationDegrees": 69.04557696237207
     },
     {
-      "waypointRelativePos": 0.55,
-      "rotationDegrees": 90.0
-    },
-    {
-      "waypointRelativePos": 0.8017057569296364,
-      "rotationDegrees": 25.0
+      "waypointRelativePos": 0.8912579957356065,
+      "rotationDegrees": 1.6434623205694843
     }
   ],
   "constraintZones": [],

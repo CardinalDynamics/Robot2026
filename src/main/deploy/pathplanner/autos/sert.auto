@@ -21,13 +21,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "OutpostSimple1"
+                        "pathName": "sert1"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "OutpostSimple2"
+                        "pathName": "sert2"
                       }
                     }
                   ]
@@ -51,6 +51,25 @@
                     }
                   ]
                 }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 4.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "turretFlip"
+                      }
+                    }
+                  ]
+                }
               }
             ]
           }
@@ -70,47 +89,15 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.0
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
                         "pathName": "OutpostStart-OutpostClose"
                       }
                     },
                     {
-                      "type": "race",
+                      "type": "path",
                       "data": {
-                        "commands": [
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "OutpostClose-OutpostTrench"
-                            }
-                          },
-                          {
-                            "type": "sequential",
-                            "data": {
-                              "commands": [
-                                {
-                                  "type": "wait",
-                                  "data": {
-                                    "waitTime": 0.8
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "turretFlip"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        ]
+                        "pathName": "OutpostClose-OutpostTrench"
                       }
                     }
                   ]

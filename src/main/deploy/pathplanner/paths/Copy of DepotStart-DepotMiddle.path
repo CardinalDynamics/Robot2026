@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5991440798858774,
-        "y": 7.483152639087019
+        "x": 4.420944444444444,
+        "y": 7.640444444444444
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.913133333333334,
-        "y": 7.318877777777777
+        "x": 9.7349336978919,
+        "y": 7.476169583135202
       },
       "isLocked": false,
       "linkedName": "DepotStart"
@@ -57,7 +57,7 @@
   "folder": "DepotTwoBump",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }
