@@ -71,16 +71,16 @@ public class RobotContainer {
     public final KickerSubsystem kicker = new KickerSubsystem();
 
     Trigger withinShooterTolerance = new Trigger(turret::turretAtPosition);
+    Trigger withinPassingTolerance = new Trigger(turret::turretAtPassing);
 
     public final AutoAim autoAimCommandFactory = new AutoAim(drivetrain, turret, hood, shooter, spindexer, kicker);
 
     public SendableChooser<Command> autoChooser = new SendableChooser<>();
 
-
     public RobotContainer() {
         SmartDashboard.putNumber("set hood", 18.0);
         SmartDashboard.putNumber("set shooter", 0);
-        SmartDashboard.putNumber("set turret", 0);        
+        SmartDashboard.putNumber("set turret", 0);
         registerCommands();
         configureDriverControls();
         configureOperatorControls();
@@ -100,7 +100,7 @@ public class RobotContainer {
             .alongWith(Commands.waitSeconds(ShooterConstants.shooterRampTimeSeconds).andThen(Commands.run(() -> spindexer.setSpindexerVolts(8), spindexer)))
             .alongWith(Commands.waitSeconds(ShooterConstants.shooterRampTimeSeconds).andThen(Commands.run(() -> kicker.setKickerVolts(12), kicker)))
             .withTimeout(10.0)
-            .finallyDo(() -> shooter.setShooterVoltage(0)));
+            .finallyDo(() -> {spindexer.setSpindexerVolts(0); kicker.setKickerVolts(0); shooter.setShooterVoltage(3);}));
 
         NamedCommands.registerCommand("shootFast",
             autoAimCommandFactory.generateTurretIdleCommand()
@@ -112,11 +112,11 @@ public class RobotContainer {
             .withTimeout(4.0)
             .finallyDo(() -> {spindexer.setSpindexerVolts(0); kicker.setKickerVolts(0);}));
             
-        NamedCommands.registerCommand("shootIdle", Commands.runOnce(() -> shooter.setShooterVoltage(5), shooter));
+        NamedCommands.registerCommand("shootIdle", Commands.runOnce(() -> shooter.setShooterVoltage(8), shooter));
 
         NamedCommands.registerCommand("turretFlip", turret.getTurretPIDCommand(() -> 70.0));
         NamedCommands.registerCommand("turretZero", turret.getTurretPIDCommand(() -> -100.0));
-
+        NamedCommands.registerCommand("stow", hood.getHoodPIDCommand(() -> 18));
         autoChooser.setDefaultOption("none", Commands.waitSeconds(0));
         autoChooser.addOption("Right smash (OG)", AutoBuilder.buildAuto("OutpostTwo"));
         autoChooser.addOption("Left smash (OG)", AutoBuilder.buildAuto("DepotTwo"));
@@ -124,7 +124,10 @@ public class RobotContainer {
         autoChooser.addOption("Left Simple (no passback)", AutoBuilder.buildAuto("DepotSimple"));
         autoChooser.addOption("Right mix (og + simple)", AutoBuilder.buildAuto("OutpostMix"));
         autoChooser.addOption("Left Mix (og + simple)", AutoBuilder.buildAuto("DepotMix"));
+        autoChooser.addOption("Right Bump", AutoBuilder.buildAuto("OutpostBump"));
+        // autoChooser.addOption("Left Bump", AutoBuilder.buildAuto("OutpostBump"));
         autoChooser.addOption("sert", AutoBuilder.buildAuto("sert"));
+        autoChooser.addOption("OrbitOutpost", AutoBuilder.buildAuto("OrbitOutpost"));
         // autoChooser.addOption("OutpostBump", AutoBuilder.buildAuto("OutpostBump"));
         // autoChooser.addOption("DepotBump", AutoBuilder.buildAuto("DepotBump"));
         autoChooser.addOption("test", AutoBuilder.buildAuto("test"));
@@ -155,7 +158,7 @@ public class RobotContainer {
             point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))
         ));
 
-        // Reset the field-centric heading on left bumper press.
+        // Reset the field-centric heading
         driverController.povUp().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         drivetrain.registerTelemetry(logger::telemeterize);
@@ -177,11 +180,9 @@ public class RobotContainer {
                     .withVelocityY(-driverController.getLeftX() * MaxSpeed / 2) // Drive left with negative X (left)
                     .withRotationalRate(-driverController.getRightX() * MaxAngularRate / 2) // Drive counterclockwise with negative X (left)
         ));
-        driverController.rightBumper().onTrue(Commands.run(() -> wheels.setWheelVoltage(10), wheels));
-        driverController.rightBumper().onFalse(Commands.run(() -> wheels.setWheelVoltage(0), wheels));
         driverController.rightBumper().onFalse(autoAimCommandFactory.generateTurretIdleCommand());
         driverController.rightBumper().onFalse(shooter.getShooterPIDCommand(() -> ShooterConstants.shooterIdleRPM));
-        driverController.leftBumper().onTrue(Commands.run(() -> wheels.setWheelVoltage(12), wheels));
+        driverController.leftBumper().onTrue(Commands.run(() -> wheels.setWheelVoltage(-10), wheels));
         driverController.leftBumper().onFalse(Commands.run(() -> wheels.setWheelVoltage(0), wheels));
         driverController.leftBumper().onTrue(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotDeployPosition), pivot));
 
@@ -218,10 +219,10 @@ public class RobotContainer {
         debugController.b().whileTrue(autoAimCommandFactory.generateTurretIdleCommand());
         debugController.y().whileTrue(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotStowPosiion), pivot));
 
-        debugController.povUp().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        debugController.povRight().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        debugController.povDown().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        debugController.povLeft().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        debugController.povUp().whileTrue(turret.sysIdDynamic(Direction.kForward));
+        debugController.povRight().whileTrue(turret.sysIdDynamic(Direction.kReverse));
+        debugController.povDown().whileTrue(turret.sysIdQuasistatic(Direction.kForward));
+        debugController.povLeft().whileTrue(turret.sysIdQuasistatic(Direction.kReverse));
 
 
         debugController.rightTrigger().whileTrue(Commands.run(() -> spindexer.setSpindexerVolts(8), spindexer));

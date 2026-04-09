@@ -15,6 +15,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -53,7 +54,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private double m_lastSimTime;
 
     QuestNav questNav = new QuestNav();
-    Pose2d questPose = new Pose2d();
+    Pose2d questPoseLog = new Pose2d();
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -287,22 +288,37 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return getPose().transformBy(DriveConstants.shooterOffset);
     }
 
+    @Logged
     public boolean questIsTracking() {
         return questNav.isTracking();
     }
 
+    @Logged
+    public boolean questIsConnected() {
+        return questNav.isConnected();
+    }
+
     public void setAllianceTargets() {
         var alliance = DriverStation.getAlliance();
+        var mode = DriverStation.isAutonomous();
         if (alliance.isPresent()) {
             if (alliance.get() == DriverStation.Alliance.Red) {
                 leftPassingPose = Constants.redLeftPassTarget;
-                rightPassingPose = Constants.redRightPassTarget;
                 allianceHubPose = Constants.redHubPose;
-        } else {
-            leftPassingPose = Constants.blueLeftPassTarget;
-            rightPassingPose = Constants.blueRightPassTarget;
-            allianceHubPose = Constants.blueHubPose;
-        }
+                if (mode) {
+                    rightPassingPose = new Pose2d(16.1, 5, new Rotation2d());
+                } else {
+                    rightPassingPose = Constants.redRightPassTarget;
+                }
+            } else {
+                leftPassingPose = Constants.blueLeftPassTarget;
+                allianceHubPose = Constants.blueHubPose;
+                if (mode) {
+                    rightPassingPose = new Pose2d(.3, 1.1, new Rotation2d());
+                } else {
+                    rightPassingPose = Constants.blueRightPassTarget;
+                }
+            }
         } else {
             leftPassingPose = Constants.redLeftPassTarget;
             rightPassingPose = Constants.redRightPassTarget;
@@ -382,8 +398,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return m_sysIdRoutineToApply.dynamic(direction);
     }
 
+    @Logged
     public Pose2d getQuestPose() {
-        return questPose;
+        return questPoseLog;
+    }
+
+    public boolean isStationary() {
+        return (getFieldRelativeChassisSpeeds().vxMetersPerSecond < .1)
+        && (getFieldRelativeChassisSpeeds().vyMetersPerSecond < .1)
+        && (getFieldRelativeChassisSpeeds().omegaRadiansPerSecond < .1);
     }
 
     @Override
@@ -414,7 +437,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // Loop over the pose data frames and send them to the pose estimator
         for (PoseFrame questFrame : questFrames) {
             // Make sure the Quest was tracking the pose for this frame
-            if (questFrame.isTracking()) {
+            if (questFrame.isTracking() && questNav.isConnected()) {
                 // Get the pose of the Quest
                 Pose3d questPose = questFrame.questPose3d();
                 // Get timestamp for when the data was sent
@@ -427,7 +450,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
                 // Add the measurement to our estimator
                 addVisionMeasurement(robotPose.toPose2d(), timestamp, DriveConstants.QUESTNAV_STD_DEVS);
-                this.questPose = robotPose.toPose2d();
+                questPoseLog = robotPose.toPose2d();
             }
         }
 
@@ -435,14 +458,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         LimelightHelpers.PoseEstimate secondMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-cal");
         if (limelightMeasurement.tagCount >= 2) {  // Only trust measurement if we see multiple tags
             addVisionMeasurement(limelightMeasurement.pose, limelightMeasurement.timestampSeconds, DriveConstants.LIMELIGHT_STD_DEVS);
-            LimelightHelpers.setLEDMode_ForceBlink("limelight-cal");
+            SmartDashboard.putBoolean("seetag", true);
         }
         else if (secondMeasurement.tagCount >= 2) {  // Only trust measurement if we see multiple tags
-            addVisionMeasurement(secondMeasurement.pose, secondMeasurement.timestampSeconds, DriveConstants.LIMELIGHT_STD_DEVS);
-            LimelightHelpers.setLEDMode_ForceBlink("limelight-cal");
+            addVisionMeasurement(secondMeasurement.pose, secondMeasurement.timestampSeconds, DriveConstants.CAL_STD_DEVS);
+            SmartDashboard.putBoolean("seetag", true);
         } else {
-            LimelightHelpers.setLEDMode_ForceOff("limelight-cal");
+            SmartDashboard.putBoolean("seetag", false);
         }
+
+        SmartDashboard.updateValues();
     }
 
     private void startSimThread() {

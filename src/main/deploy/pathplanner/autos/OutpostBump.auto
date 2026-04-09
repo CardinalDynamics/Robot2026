@@ -27,7 +27,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "OutpostMiddle-OutpostTrench"
+                        "pathName": "OutpostMiddle-OutpostBump"
                       }
                     }
                   ]
@@ -51,27 +51,14 @@
                     }
                   ]
                 }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 4.0
-                      }
-                    }
-                  ]
-                }
               }
             ]
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "shootFast"
+            "pathName": "OutpostBump-OutpostTrench"
           }
         },
         {

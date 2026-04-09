@@ -4,12 +4,12 @@ public final class TurretConstants {
 
     public static final int turretMotorCANID = 51;
 
-    public static final double kP = 10;
+    public static final double kP = 17;
     // public static final double kP = 0;
     public static final double kI = 0;
-    public static final double kD = 0;
-    public static final double kS = 0;
-    public static final double kV = 0;
+    public static final double kD = 0.1;
+    public static final double kS = 0.2998046875;
+    public static final double kV = 0.1042499989;
     public static final double kA = 0;
 
     // was 200

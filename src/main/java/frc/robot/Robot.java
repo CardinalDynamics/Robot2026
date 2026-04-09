@@ -47,6 +47,7 @@ public class Robot extends TimedRobot {
             config.errorHandler = ErrorHandler.crashOnError();
          }
         });
+        SignalLogger.start();
         Epilogue.bind(this);
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand().ignoringDisable(true));
     }

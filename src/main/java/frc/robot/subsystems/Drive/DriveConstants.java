@@ -34,7 +34,10 @@ public class DriveConstants {
     );
 
     public static final Matrix<N3, N1> LIMELIGHT_STD_DEVS =
-    VecBuilder.fill(0.7, 0.7, 9999999);
+    VecBuilder.fill(0.2, 0.2, Math.toRadians(10));
+
+    public static final Matrix<N3, N1> CAL_STD_DEVS =
+    VecBuilder.fill(0.25, 0.25, Math.toRadians(60));
 
     public static final PPHolonomicDriveController ppController =
     new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
