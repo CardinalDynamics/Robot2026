@@ -27,7 +27,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "OutpostMiddle-OutpostTrench"
+                        "pathName": "OutpostMiddle-OutpostShoot"
                       }
                     }
                   ]
@@ -47,19 +47,6 @@
                       "type": "named",
                       "data": {
                         "name": "intake"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 4.0
                       }
                     }
                   ]
@@ -85,13 +72,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "OutpostTrench-OutpostClose"
+                        "pathName": "OutpostShoot-OutpostClose"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "OutpostClose-OutpostTrench"
+                        "pathName": "OutpostClose-OutpostShoot"
                       }
                     }
                   ]

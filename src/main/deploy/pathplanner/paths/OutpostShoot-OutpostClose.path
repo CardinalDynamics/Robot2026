@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.592666666666667,
-        "y": 0.6244444444444435
+        "x": 3.5991440798858774,
+        "y": 0.6256633380884444
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.233138373751783,
-        "y": 0.6127246790299581
+        "x": 4.239615786970993,
+        "y": 0.613943572673959
       },
       "isLocked": false,
-      "linkedName": "OutpostTrench"
+      "linkedName": "OutpostShoot"
     },
     {
       "anchor": {
@@ -33,11 +33,11 @@
     {
       "anchor": {
         "x": 7.713637660485022,
-        "y": 2.889928673323824
+        "y": 2.5405848787446508
       },
       "prevControl": {
         "x": 7.695763305597505,
-        "y": 2.640568477146978
+        "y": 2.2912246825678046
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,7 +47,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1.057569296375249,
-      "rotationDegrees": 0.0
+      "rotationDegrees": 180.0
     },
     {
       "waypointRelativePos": 1.4882729211087482,
@@ -58,8 +58,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.2,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.7,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -73,7 +73,7 @@
   "folder": "OutpostTwo",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

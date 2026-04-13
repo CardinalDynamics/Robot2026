@@ -8,20 +8,36 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.587974322396576,
-        "y": 2.825235378031384
+        "x": 7.661491324461487,
+        "y": 4.7047330552247555
       },
       "isLocked": false,
       "linkedName": "OutpostMiddle"
     },
     {
       "anchor": {
-        "x": 1.7877318116975744,
-        "y": 2.398259629101284
+        "x": 5.850470756062768,
+        "y": 2.501768901569187
       },
       "prevControl": {
-        "x": 3.469757489300999,
-        "y": 2.3723823109843085
+        "x": 6.82557245155096,
+        "y": 3.193598282965376
+      },
+      "nextControl": {
+        "x": 5.622144054782959,
+        "y": 2.3397723413811167
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.042781740370898,
+        "y": 2.501768901569187
+      },
+      "prevControl": {
+        "x": 4.541359781897052,
+        "y": 2.5067390226813298
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,16 +46,34 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.32622601279317404,
-      "rotationDegrees": 90.0
+      "waypointRelativePos": 0.5970149253731314,
+      "rotationDegrees": 50.59835509309663
+    },
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 180.0
     }
   ],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.3936529372045916,
+      "maxWaypointRelativePos": 2.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 3.2,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.2,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.7,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -47,7 +81,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 81.86989764584402
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "OutpostTwoBump",

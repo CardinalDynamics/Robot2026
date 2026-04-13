@@ -8,66 +8,66 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.667018711834384,
-        "y": 5.173531533385492
+        "x": 7.118459343794578,
+        "y": 4.571954350927247
       },
       "isLocked": false,
       "linkedName": "OutpostMiddle"
     },
     {
       "anchor": {
-        "x": 5.811654778887304,
-        "y": 0.6244444444444435
-      },
-      "prevControl": {
-        "x": 6.989072753209699,
+        "x": 6.0057346647646215,
         "y": 0.6256633380884444
       },
+      "prevControl": {
+        "x": 7.009699503041759,
+        "y": 0.6109140033948905
+      },
       "nextControl": {
-        "x": 5.523617479944823,
-        "y": 0.6241462607572799
+        "x": 5.283349344323658,
+        "y": 0.6362759636134359
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.592666666666667,
-        "y": 0.6244444444444435
+        "x": 3.5991440798858774,
+        "y": 0.6256633380884444
       },
       "prevControl": {
-        "x": 4.628832423746994,
-        "y": 0.6426771649543553
+        "x": 3.8845252126026373,
+        "y": 0.6154975169559377
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "OutpostTrench"
+      "linkedName": "OutpostShoot"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.45,
-      "rotationDegrees": 69.04557696237207
+      "waypointRelativePos": 0.3240938166311286,
+      "rotationDegrees": 57.49599154318645
     },
     {
-      "waypointRelativePos": 1.0234541577825156,
-      "rotationDegrees": 1.6434623205694843
+      "waypointRelativePos": 1.0021321961620548,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.2,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.7,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 0.0
+    "velocity": 0,
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "OutpostTwo",

@@ -27,7 +27,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "DepotMiddle-DepotTrench"
+                        "pathName": "DepotMiddle-DepotShoot"
                       }
                     }
                   ]
@@ -91,13 +91,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "DepotTrench-DepotMiddleClose"
+                        "pathName": "DepotShoot-DepotMiddleClose"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "DepotMiddleClose-DepotTrench"
+                        "pathName": "DepotMiddleClose-DepotShoot"
                       }
                     }
                   ]

@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.923977777777778,
-        "y": 7.465044444444444
+        "x": 3.6250213980028523,
+        "y": 7.444336661911555
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.879576960578249,
-        "y": 7.411949032272228
+        "x": 4.580620580803323,
+        "y": 7.391241249739339
       },
       "isLocked": false,
       "linkedName": "DepotShoot"
     },
     {
       "anchor": {
-        "x": 5.9927960057061345,
-        "y": 7.340827389443652
+        "x": 5.876348074179743,
+        "y": 7.276134094151213
       },
       "prevControl": {
-        "x": 5.919274543496752,
-        "y": 7.579772141624139
+        "x": 5.802826611970361,
+        "y": 7.5150788463317
       },
       "nextControl": {
-        "x": 6.135146809346413,
-        "y": 6.878187277612759
+        "x": 6.018698877820022,
+        "y": 6.8134939823203196
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.755933333333334,
-        "y": 5.1751
+        "x": 5.746188888888888,
+        "y": 5.10243937232525
       },
       "prevControl": {
-        "x": 5.736444444444447,
-        "y": 6.64651111111111
+        "x": 5.726700000000001,
+        "y": 6.5738504834363605
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,7 +46,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.8272921108741921,
+      "waypointRelativePos": 0.5245202558635438,
       "rotationDegrees": 180.0
     },
     {
@@ -58,8 +58,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.2,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.7,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

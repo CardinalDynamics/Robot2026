@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.7877318116975744,
-        "y": 2.398259629101284
+        "x": 3.042781740370898,
+        "y": 2.501768901569187
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7877318116975744,
-        "y": 2.398259629101284
+        "x": 2.9651497860199716,
+        "y": 1.5701854493580605
       },
       "isLocked": false,
       "linkedName": "OutpostBump"
     },
     {
       "anchor": {
-        "x": 3.592666666666667,
-        "y": 0.6244444444444435
+        "x": 3.5991440798858774,
+        "y": 0.6256633380884444
       },
       "prevControl": {
-        "x": 2.592666666666667,
-        "y": 0.6244444444444435
+        "x": 2.5991440798858774,
+        "y": 0.6256633380884445
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "OutpostTrench"
+      "linkedName": "OutpostShoot"
     }
   ],
   "rotationTargets": [],
@@ -45,8 +45,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.0,
-    "maxAcceleration": 1.0,
+    "maxVelocity": 0.8,
+    "maxAcceleration": 0.5,
     "maxAngularVelocity": 300.0,
     "maxAngularAcceleration": 300.0,
     "nominalVoltage": 12.0,
@@ -54,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "OutpostTwoBump",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 81.86989764584402
+    "rotation": 180.0
   },
   "useDefaultConstraints": false
 }

@@ -55,6 +55,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     QuestNav questNav = new QuestNav();
     Pose2d questPoseLog = new Pose2d();
+    boolean enableQuest = true;
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -273,6 +274,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     @Override
     public void resetPose(Pose2d pose) {
         super.resetPose(pose);
+    }
+
+    public void resetQuest(Pose2d pose) {
         questNav.setPose(new Pose3d(pose).transformBy(DriveConstants.ROBOT_TO_QUEST));
     }
 
@@ -296,6 +300,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     @Logged
     public boolean questIsConnected() {
         return questNav.isConnected();
+    }
+
+    public boolean isQuestAtPose(Pose2d pose) {
+        return (Math.abs(questPoseLog.getX() - pose.getX()) < .1)
+        && (Math.abs(questPoseLog.getY() - pose.getY()) < .1)
+        && (Math.abs(questPoseLog.getRotation().getDegrees() - pose.getRotation().getDegrees()) < 5);
     }
 
     public void setAllianceTargets() {
@@ -350,6 +360,26 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             }
             return target;
         };
+    }
+
+    public void setQuestEnabled(boolean enabled) {
+        enableQuest = enabled;
+    }
+
+    @Logged
+    public boolean getQuestEnabled() {
+        return enableQuest;
+    }
+
+    LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+    LimelightHelpers.PoseEstimate secondMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-cal");
+    public void forceResetQuest() {
+        if (limelightMeasurement.tagCount >= 2) {  // Only trust measurement if we see multiple tags
+            resetPose(limelightMeasurement.pose);
+        }
+        else if (secondMeasurement.tagCount >= 2) {  // Only trust measurement if we see multiple tags
+            resetPose(secondMeasurement.pose);
+        }
     }
 
     public Pose2d getLeftPassingPose() {
@@ -437,7 +467,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // Loop over the pose data frames and send them to the pose estimator
         for (PoseFrame questFrame : questFrames) {
             // Make sure the Quest was tracking the pose for this frame
-            if (questFrame.isTracking() && questNav.isConnected()) {
+            if (questFrame.isTracking() && enableQuest) {
                 // Get the pose of the Quest
                 Pose3d questPose = questFrame.questPose3d();
                 // Get timestamp for when the data was sent
@@ -466,8 +496,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         } else {
             SmartDashboard.putBoolean("seetag", false);
         }
-
-        SmartDashboard.updateValues();
     }
 
     private void startSimThread() {

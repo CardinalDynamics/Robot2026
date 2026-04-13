@@ -8,29 +8,29 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.038885782215882,
-        "y": 1.4325079251862416
+        "x": 6.549158345221112,
+        "y": 2.6829101283880172
       },
       "isLocked": false,
       "linkedName": "OutpostSimple1"
     },
     {
       "anchor": {
-        "x": 3.5991440798858774,
-        "y": 0.6256633380884444
+        "x": 3.042781740370898,
+        "y": 2.501768901569187
       },
       "prevControl": {
-        "x": 7.243566302108099,
-        "y": 0.6013855603106665
+        "x": 5.009457917261056,
+        "y": 2.592339514978602
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "OutpostShoot"
+      "linkedName": "OutpostBump"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.8058091286307042,
+      "waypointRelativePos": 0.5,
       "rotationDegrees": 180.0
     }
   ],
@@ -50,7 +50,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "OutpostSimple",
+  "folder": "OutpostTwoBump",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -88.86557836902301

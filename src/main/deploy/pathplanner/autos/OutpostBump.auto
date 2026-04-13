@@ -21,13 +21,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "OutpostStart-OutpostMiddle"
+                        "pathName": "OutpostSimple1"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "OutpostMiddle-OutpostBump"
+                        "pathName": "simple-bump"
                       }
                     }
                   ]
@@ -58,7 +58,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "OutpostBump-OutpostTrench"
+            "pathName": "OutpostBump-OutpostShoot"
           }
         },
         {
@@ -72,13 +72,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "OutpostTrench-OutpostClose"
+                        "pathName": "OutpostShoot-OutpostClose"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "OutpostClose-OutpostTrench"
+                        "pathName": "OutpostClose-OutpostShoot"
                       }
                     }
                   ]

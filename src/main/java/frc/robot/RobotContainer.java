@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -13,11 +15,17 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
+import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -76,6 +84,8 @@ public class RobotContainer {
     public final AutoAim autoAimCommandFactory = new AutoAim(drivetrain, turret, hood, shooter, spindexer, kicker);
 
     public SendableChooser<Command> autoChooser = new SendableChooser<>();
+    SendableChooser<Boolean> chooser = new SendableChooser<>();
+    boolean flip = false;
 
     public RobotContainer() {
         SmartDashboard.putNumber("set hood", 18.0);
@@ -108,8 +118,8 @@ public class RobotContainer {
             .alongWith(autoAimCommandFactory.generateAssumedShooterCommand())
             .alongWith(Commands.run(() -> spindexer.setSpindexerVolts(8), spindexer))
             .alongWith(Commands.run(() -> kicker.setKickerVolts(12), kicker))
-            .alongWith(Commands.waitSeconds(3.0).andThen(Commands.run(() -> pivot.usePivotPID(12.0 / 82.74 * 360.0), pivot)))
-            .withTimeout(4.0)
+            // .alongWith(Commands.waitSeconds(3.0).andThen(Commands.run(() -> pivot.usePivotPID(12.0 / 82.74 * 360.0), pivot)))
+            .withTimeout(5.0)
             .finallyDo(() -> {spindexer.setSpindexerVolts(0); kicker.setKickerVolts(0);}));
             
         NamedCommands.registerCommand("shootIdle", Commands.runOnce(() -> shooter.setShooterVoltage(8), shooter));
@@ -117,22 +127,65 @@ public class RobotContainer {
         NamedCommands.registerCommand("turretFlip", turret.getTurretPIDCommand(() -> 70.0));
         NamedCommands.registerCommand("turretZero", turret.getTurretPIDCommand(() -> -100.0));
         NamedCommands.registerCommand("stow", hood.getHoodPIDCommand(() -> 18));
-        autoChooser.setDefaultOption("none", Commands.waitSeconds(0));
-        autoChooser.addOption("Right smash (OG)", AutoBuilder.buildAuto("OutpostTwo"));
-        autoChooser.addOption("Left smash (OG)", AutoBuilder.buildAuto("DepotTwo"));
-        autoChooser.addOption("Right simple (no passback)", AutoBuilder.buildAuto("OutpostSimple"));
-        autoChooser.addOption("Left Simple (no passback)", AutoBuilder.buildAuto("DepotSimple"));
-        autoChooser.addOption("Right mix (og + simple)", AutoBuilder.buildAuto("OutpostMix"));
-        autoChooser.addOption("Left Mix (og + simple)", AutoBuilder.buildAuto("DepotMix"));
-        autoChooser.addOption("Right Bump", AutoBuilder.buildAuto("OutpostBump"));
-        // autoChooser.addOption("Left Bump", AutoBuilder.buildAuto("OutpostBump"));
-        autoChooser.addOption("sert", AutoBuilder.buildAuto("sert"));
-        autoChooser.addOption("OrbitOutpost", AutoBuilder.buildAuto("OrbitOutpost"));
-        // autoChooser.addOption("OutpostBump", AutoBuilder.buildAuto("OutpostBump"));
-        // autoChooser.addOption("DepotBump", AutoBuilder.buildAuto("DepotBump"));
-        autoChooser.addOption("test", AutoBuilder.buildAuto("test"));
-        SmartDashboard.putData(autoChooser);
+        chooser.setDefaultOption("Not Flipped", false);
+        chooser.addOption("Flipped", true);
+
+        SmartDashboard.putData(chooser);
+        chooser.setDefaultOption("Not Flipped", false);
+        autoChooser =
+            AutoBuilder.buildAutoChooserWithOptionsModifier(
+                autoStream ->
+                    autoStream.map(
+                        auto -> {
+                        auto = new PathPlannerAuto(auto.getName(), chooser.getSelected());
+                        return auto;
+                        }));
+        SmartDashboard.putData("chooser", autoChooser);
+        autoChooser.onChange(autoCommand -> {handleAutoPathChange(autoCommand.getName());});
     }
+
+    private void handleAutoPathChange(String autoName) {
+        getAutoStartPose(autoName)
+            .ifPresent(
+                pose -> {
+                drivetrain.resetPose(pose);
+                drivetrain.resetQuest(pose);
+                });
+    }
+
+  /**
+   * Gets the starting pose from a PathPlanner auto.
+   *
+   * @param autoName The name of the auto to load
+   * @return Optional containing the starting pose, or empty if path cannot be loaded
+   */
+  public Optional<Pose2d> getAutoStartPose(String autoName) {
+    try {
+      List<PathPlannerPath> auto = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
+      // Check to see if we have a traj
+      if (auto.isEmpty()) return Optional.empty();
+      // Load it
+      PathPlannerPath path = auto.get(0);
+      if (chooser.getSelected()) {
+        path = path.mirrorPath();
+      }
+      Optional<PathPlannerTrajectory> expectedTrajectory =
+          path.getIdealTrajectory(RobotConfig.fromGUISettings());
+      if (expectedTrajectory.isPresent()) {
+        PathPlannerTrajectory trajectory = expectedTrajectory.get();
+        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+          return Optional.of(FlippingUtil.flipFieldPose(trajectory.getInitialState().pose));
+        }
+        return Optional.of(trajectory.getInitialState().pose);
+      }
+      return Optional.empty();
+    } catch (Exception e) {
+      System.err.println("Failed to load auto start pose: " + autoName);
+      e.printStackTrace();
+      return Optional.empty();
+    }
+  }
+
 
     private void configureDriverControls() {
         // Note that X is defined as forward according to WPILib convention,
@@ -146,7 +199,7 @@ public class RobotContainer {
             )
         );
 
-        // Idle while the robot is disabled. This ensures the configured
+        // Idle while the robot is disabled. This ensures the confq`igured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
@@ -211,6 +264,9 @@ public class RobotContainer {
         operatorController.a().whileTrue(turret.getTurretPIDCommand(() -> -90));
         // operatorController.a().toggleOnTrue(autoAimCommandFactory.generateHoodIdleCommand());
         operatorController.y().whileTrue(hood.getHoodPIDCommand(() -> HoodConstants.hoodStowSetpoint));
+        operatorController.povUp().onTrue(Commands.runOnce(() -> drivetrain.setQuestEnabled(true)));
+        operatorController.povDown().onTrue(Commands.runOnce(() -> drivetrain.setQuestEnabled(false)));
+        operatorController.povRight().onTrue(Commands.runOnce(() -> drivetrain.forceResetQuest()));
     }
 
     private void configureDebugControls() {
@@ -246,5 +302,27 @@ public class RobotContainer {
     
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
+    }
+
+    public void disabledPeriodic() {
+        // Update auto chooser when flip selection changes
+        if(flip != chooser.getSelected()) {
+            flip = chooser.getSelected();
+            autoChooser =
+                    AutoBuilder.buildAutoChooserWithOptionsModifier(
+                        autoStream ->
+                            autoStream.map(
+                                auto -> {
+                                    auto = new PathPlannerAuto(auto.getName(), flip);
+                                    return auto;
+                                }));
+            SmartDashboard.putData("chooser", autoChooser);
+            autoChooser.onChange(autoCommand -> {handleAutoPathChange(autoCommand.getName());});
+        }
+        if (getAutoStartPose(autoChooser.getSelected().getName()).isPresent()) {
+            if (!(drivetrain.isQuestAtPose(getAutoStartPose(autoChooser.getSelected().getName()).get()))) {
+                handleAutoPathChange(autoChooser.getSelected().getName());
+            }
+        }
     }
 }

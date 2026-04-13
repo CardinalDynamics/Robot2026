@@ -14,6 +14,7 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
     
     public static final CANBus canivoreBus = new CANBus("can_1");
+    public static final CANBus rioBus = new CANBus("rio");
 
     public static final double horizontalCenterLine = Units.inchesToMeters(317.69 / 2.0);
     public static final Pose2d blueHubPose = new Pose2d(Units.inchesToMeters(182.11), horizontalCenterLine, new Rotation2d());

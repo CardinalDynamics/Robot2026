@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.755933333333334,
-        "y": 5.1751
+        "x": 5.746188888888888,
+        "y": 5.10243937232525
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.743800000000001,
-        "y": 4.863277777777776
+        "x": 8.968687589158344,
+        "y": 3.769757489300999
       },
       "isLocked": false,
       "linkedName": "DepotMiddleClose"
@@ -20,28 +20,28 @@
         "y": 7.4572753209700435
       },
       "prevControl": {
-        "x": 8.019338115927177,
-        "y": 6.25841089938057
+        "x": 7.6802058882250765,
+        "y": 7.171872374932709
       },
       "nextControl": {
-        "x": 5.522164699477186,
-        "y": 7.57542622240076
+        "x": 5.498867335408546,
+        "y": 7.493772569963226
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.5862054208273886,
-        "y": 7.4572753209700435
+        "x": 3.6250213980028523,
+        "y": 7.444336661911555
       },
       "prevControl": {
-        "x": 4.615833333333334,
-        "y": 7.416322222222221
+        "x": 4.373315703755453,
+        "y": 7.412909452480033
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "DepotTrench"
+      "linkedName": "DepotShoot"
     }
   ],
   "rotationTargets": [
@@ -51,15 +51,15 @@
     },
     {
       "waypointRelativePos": 0.9543568464730253,
-      "rotationDegrees": 0.0
+      "rotationDegrees": 179.63105051008722
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.2,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.7,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -67,7 +67,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "DepotTwo",

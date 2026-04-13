@@ -28,9 +28,9 @@ public class DriveConstants {
 
     public static final Matrix<N3, N1> QUESTNAV_STD_DEVS =
     VecBuilder.fill(
-        0.02, // Trust down to 2cm in X direction
-        0.02, // Trust down to 2cm in Y direction
-        0.035 // Trust down to 2 degrees rotational
+        0.04, // Trust down to 4cm in X direction
+        0.04, // Trust down to 4cm in Y direction
+        0.06 // Trust down to 4 degrees rotational
     );
 
     public static final Matrix<N3, N1> LIMELIGHT_STD_DEVS =
