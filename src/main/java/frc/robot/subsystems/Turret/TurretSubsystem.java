@@ -72,7 +72,7 @@ public class TurretSubsystem extends SubsystemBase {
     );
     
     public TurretSubsystem() {
-        turretMotor = new TalonFX(TurretConstants.turretMotorCANID, Constants.canivoreBus);
+        turretMotor = new TalonFX(TurretConstants.turretMotorCANID, Constants.rioBus);
 
         // Config settings for the x44
         motorConfig = new TalonFXConfiguration();

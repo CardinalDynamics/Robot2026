@@ -3,35 +3,39 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.802266666666666,
-        "y": 2.8169444444444447
+        "x": 2.0,
+        "y": 0.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.549158345221112,
-        "y": 2.6829101283880172
+        "x": 1.9899471835476001,
+        "y": 1.4276247785069307
       },
       "isLocked": false,
-      "linkedName": "OutpostSimple1"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.042781740370898,
-        "y": 2.501768901569187
+        "x": 2.0,
+        "y": 2.438
       },
       "prevControl": {
-        "x": 5.009457917261056,
-        "y": 2.592339514978602
+        "x": 2.025930159754518,
+        "y": 0.9369109988581577
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "OutpostBump"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
+      "waypointRelativePos": 0.1791044776119417,
+      "rotationDegrees": 119.99999999999999
+    },
+    {
       "waypointRelativePos": 0.5,
-      "rotationDegrees": 180.0
+      "rotationDegrees": -100.0
     }
   ],
   "constraintZones": [],
@@ -47,13 +51,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "OutpostTwoBump",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -80.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

@@ -3,37 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.802266666666666,
-        "y": 2.8169444444444447
+        "x": 3.553688888888889,
+        "y": 1.6963333333333335
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.549158345221112,
-        "y": 2.6829101283880172
+        "x": 1.3904222222222211,
+        "y": 2.5928222222222224
       },
       "isLocked": false,
-      "linkedName": "OutpostSimple1"
+      "linkedName": "Bump"
     },
     {
       "anchor": {
-        "x": 3.042781740370898,
-        "y": 2.501768901569187
+        "x": 5.697466666666667,
+        "y": 2.2907444444444436
       },
       "prevControl": {
-        "x": 5.009457917261056,
-        "y": 2.592339514978602
+        "x": 4.610619305753685,
+        "y": 2.2907444444444436
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "OutpostBump"
+      "linkedName": "BumpMid"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 180.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -47,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": "OutpostTwoBump",
+  "folder": "Center Autos",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -80.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

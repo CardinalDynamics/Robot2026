@@ -1,0 +1,84 @@
+{
+ "name":"settings",
+ "version":2,
+ "type":"Swerve",
+ "variables":{
+  "expressions":{},
+  "poses":{}
+ },
+ "config":{
+  "frontLeft":{
+   "x":{
+    "exp":"10.875 in",
+    "val":0.276225
+   },
+   "y":{
+    "exp":"10.875 in",
+    "val":0.276225
+   }
+  },
+  "backLeft":{
+   "x":{
+    "exp":"-10.875 in",
+    "val":-0.276225
+   },
+   "y":{
+    "exp":"10.875 in",
+    "val":0.276225
+   }
+  },
+  "mass":{
+   "exp":"134.7 lbs",
+   "val":61.098892239
+  },
+  "inertia":{
+   "exp":"6 kg m ^ 2",
+   "val":6.0
+  },
+  "gearing":{
+   "exp":"6.03",
+   "val":6.03
+  },
+  "radius":{
+   "exp":"2 in",
+   "val":0.0508
+  },
+  "vmax":{
+   "exp":"5784 RPM",
+   "val":605.6990636121121
+  },
+  "tmax":{
+   "exp":"0.914 N * m",
+   "val":0.914
+  },
+  "cof":{
+   "exp":"2.255",
+   "val":2.255
+  },
+  "bumper":{
+   "front":{
+    "exp":"16.375 in",
+    "val":0.415925
+   },
+   "side":{
+    "exp":"16.625 in",
+    "val":0.422275
+   },
+   "back":{
+    "exp":"16.375 in",
+    "val":0.415925
+   }
+  },
+  "differentialTrackWidth":{
+   "exp":"22 in",
+   "val":0.5588
+  }
+ },
+ "generationFeatures":[],
+ "codegen":{
+  "root":"../C:/Users/jacks/Documents/GitHub/Robot2026/src/main/deploy/choreo",
+  "genVars":true,
+  "genTrajData":true,
+  "useChoreoLib":true
+ }
+}

@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.542844444444444,
-        "y": 0.5075111111111108
+        "x": 8.055622222222222,
+        "y": 0.546488888888889
       },
       "isLocked": false,
       "linkedName": "OutpostStart"
     },
     {
       "anchor": {
-        "x": 8.650033333333335,
-        "y": 3.2262111111111107
+        "x": 8.562333333333333,
+        "y": 2.894899999999999
       },
       "prevControl": {
-        "x": 8.835177777777778,
-        "y": 1.6963333333333335
+        "x": 8.961855555555557,
+        "y": 0.7706111111111102
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,10 +29,6 @@
     }
   ],
   "rotationTargets": [
-    {
-      "waypointRelativePos": 0.1684647302904792,
-      "rotationDegrees": -90.0
-    },
     {
       "waypointRelativePos": 0.6381742738589169,
       "rotationDegrees": -59.99999999999999
@@ -42,15 +38,15 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 4.7,
+    "maxVelocity": 4.5,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 2.0,
+    "velocity": 3.0,
     "rotation": -61.76255446183262
   },
   "reversed": false,

@@ -360,6 +360,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             }
             return target;
         };
+        // return () -> allianceHubPose;
     }
 
     public void setQuestEnabled(boolean enabled) {
@@ -371,14 +372,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return enableQuest;
     }
 
-    LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
-    LimelightHelpers.PoseEstimate secondMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-cal");
+    
     public void forceResetQuest() {
+        LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+        LimelightHelpers.PoseEstimate secondMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-cal");
         if (limelightMeasurement.tagCount >= 2) {  // Only trust measurement if we see multiple tags
-            resetPose(limelightMeasurement.pose);
+            resetQuest(limelightMeasurement.pose);
         }
         else if (secondMeasurement.tagCount >= 2) {  // Only trust measurement if we see multiple tags
-            resetPose(secondMeasurement.pose);
+            resetQuest(secondMeasurement.pose);
         }
     }
 
@@ -398,6 +400,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return new Translation2d(getState().Speeds.vxMetersPerSecond, getState().Speeds.vyMetersPerSecond).rotateBy(getPose().getRotation());
     }
 
+    @Logged
     public double distanceToGoal() {
         return getAssumedTarget().get().getTranslation().getDistance(getShooterPose().getTranslation());
     }

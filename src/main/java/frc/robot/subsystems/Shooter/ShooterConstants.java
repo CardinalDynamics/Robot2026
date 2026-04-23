@@ -9,11 +9,11 @@ public class ShooterConstants {
     public static final InvertedValue shooterMotorLeftInvertedValue = InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue shooterMotorRightInvertedValue = InvertedValue.Clockwise_Positive;
 
-    public static final double kP = .35;
+    public static final double kP = .169;
     public static final double kI = 0;
     public static final double kD = 0;
-    public static final double kS = 0;
-    public static final double kV = .118;
+    public static final double kS = 0.0823;
+    public static final double kV = .1145;
     public static final double kA = 0;
 
     // TODO Find these limits
@@ -24,5 +24,5 @@ public class ShooterConstants {
 
     public static final double shooterToleranceRPM = 100;
 
-    public static final double shooterRampTimeSeconds = .1;
+    public static final double shooterRampTimeSeconds = .3;
 }

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.650033333333335,
-        "y": 3.2262111111111107
+        "x": 8.562333333333333,
+        "y": 2.894899999999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.118459343794578,
-        "y": 4.571954350927247
+        "x": 7.704822222222223,
+        "y": 4.356566666666666
       },
       "isLocked": false,
       "linkedName": "OutpostMiddle"
@@ -20,12 +20,12 @@
         "y": 0.6256633380884444
       },
       "prevControl": {
-        "x": 7.009699503041759,
-        "y": 0.6109140033948905
+        "x": 6.09913971349324,
+        "y": 0.8575587819246795
       },
       "nextControl": {
-        "x": 5.283349344323658,
-        "y": 0.6362759636134359
+        "x": 5.890050092573773,
+        "y": 0.33845482443363206
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,8 @@
         "y": 0.6256633380884444
       },
       "prevControl": {
-        "x": 3.8845252126026373,
-        "y": 0.6154975169559377
+        "x": 4.0155212540826515,
+        "y": 0.6266872774088817
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,11 +46,11 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.3240938166311286,
+      "waypointRelativePos": 0.2705394190871316,
       "rotationDegrees": 57.49599154318645
     },
     {
-      "waypointRelativePos": 1.0021321961620548,
+      "waypointRelativePos": 1.002132196162055,
       "rotationDegrees": 180.0
     }
   ],
@@ -58,8 +58,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 4.7,
+    "maxVelocity": 4.5,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -72,7 +72,7 @@
   "reversed": false,
   "folder": "OutpostTwo",
   "idealStartingState": {
-    "velocity": 2.0,
+    "velocity": 3.0,
     "rotation": -61.76255446183262
   },
   "useDefaultConstraints": true

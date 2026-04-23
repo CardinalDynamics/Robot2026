@@ -107,7 +107,7 @@ public class RobotContainer {
             autoAimCommandFactory.generateTurretIdleCommand()
             .alongWith(autoAimCommandFactory.generateHoodIdleCommand())
             .alongWith(autoAimCommandFactory.generateAssumedShooterCommand())
-            .alongWith(Commands.waitSeconds(ShooterConstants.shooterRampTimeSeconds).andThen(Commands.run(() -> spindexer.setSpindexerVolts(8), spindexer)))
+            .alongWith(Commands.waitSeconds(ShooterConstants.shooterRampTimeSeconds).andThen(Commands.run(() -> spindexer.setSpindexerVolts(10), spindexer)))
             .alongWith(Commands.waitSeconds(ShooterConstants.shooterRampTimeSeconds).andThen(Commands.run(() -> kicker.setKickerVolts(12), kicker)))
             .withTimeout(10.0)
             .finallyDo(() -> {spindexer.setSpindexerVolts(0); kicker.setKickerVolts(0); shooter.setShooterVoltage(3);}));
@@ -116,7 +116,7 @@ public class RobotContainer {
             autoAimCommandFactory.generateTurretIdleCommand()
             .alongWith(autoAimCommandFactory.generateHoodIdleCommand())
             .alongWith(autoAimCommandFactory.generateAssumedShooterCommand())
-            .alongWith(Commands.run(() -> spindexer.setSpindexerVolts(8), spindexer))
+            .alongWith(Commands.run(() -> spindexer.setSpindexerVolts(10), spindexer))
             .alongWith(Commands.run(() -> kicker.setKickerVolts(12), kicker))
             // .alongWith(Commands.waitSeconds(3.0).andThen(Commands.run(() -> pivot.usePivotPID(12.0 / 82.74 * 360.0), pivot)))
             .withTimeout(5.0)
@@ -220,13 +220,13 @@ public class RobotContainer {
             .whileFalse(Commands.run(() -> shooter.setShooterVoltage(0), shooter));
         driverController.rightTrigger().whileTrue(autoAimCommandFactory.generateHoodIdleCommand())
             .whileFalse(hood.getHoodPIDCommand(() -> 18.0));
-        driverController.rightTrigger().and(withinShooterTolerance).whileTrue(Commands.waitSeconds(ShooterConstants.shooterRampTimeSeconds).andThen(Commands.run(() -> spindexer.setSpindexerVolts(8), spindexer)));
+        driverController.rightTrigger().and(withinShooterTolerance).whileTrue(Commands.waitSeconds(ShooterConstants.shooterRampTimeSeconds).andThen(Commands.run(() -> spindexer.setSpindexerVolts(10), spindexer)));
         driverController.rightTrigger().and(withinShooterTolerance).whileTrue(Commands.waitSeconds(ShooterConstants.shooterRampTimeSeconds).andThen(Commands.run(() -> kicker.setKickerVolts(12), kicker)));
         driverController.rightTrigger().onTrue(autoAimCommandFactory.generateTurretIdleCommand());
         driverController.rightTrigger().onFalse(shooter.getShooterPIDCommand(() -> ShooterConstants.shooterIdleRPM));
 
         driverController.rightBumper().whileTrue(autoAimCommandFactory.generateSOTMScoringCommand());
-        driverController.rightBumper().and(withinShooterTolerance).whileTrue(Commands.waitSeconds(ShooterConstants.shooterRampTimeSeconds).andThen(Commands.run(() -> spindexer.setSpindexerVolts(8), spindexer)));
+        driverController.rightBumper().and(withinShooterTolerance).whileTrue(Commands.waitSeconds(ShooterConstants.shooterRampTimeSeconds).andThen(Commands.run(() -> spindexer.setSpindexerVolts(10), spindexer)));
         driverController.rightBumper().and(withinShooterTolerance).whileTrue(Commands.waitSeconds(ShooterConstants.shooterRampTimeSeconds).andThen(Commands.run(() -> kicker.setKickerVolts(12), kicker)));
         driverController.rightBumper().whileTrue(drivetrain.applyRequest(() ->
                 drive.withVelocityX(-driverController.getLeftY() * MaxSpeed / 2) // Drive forward with negative Y (forward)
@@ -266,7 +266,7 @@ public class RobotContainer {
         operatorController.y().whileTrue(hood.getHoodPIDCommand(() -> HoodConstants.hoodStowSetpoint));
         operatorController.povUp().onTrue(Commands.runOnce(() -> drivetrain.setQuestEnabled(true)));
         operatorController.povDown().onTrue(Commands.runOnce(() -> drivetrain.setQuestEnabled(false)));
-        operatorController.povRight().onTrue(Commands.runOnce(() -> drivetrain.forceResetQuest()));
+        operatorController.povRight().whileTrue(Commands.runOnce(() -> drivetrain.forceResetQuest()));
     }
 
     private void configureDebugControls() {
@@ -275,13 +275,12 @@ public class RobotContainer {
         debugController.b().whileTrue(autoAimCommandFactory.generateTurretIdleCommand());
         debugController.y().whileTrue(Commands.run(() -> pivot.usePivotPID(IntakeConstants.pivotStowPosiion), pivot));
 
-        debugController.povUp().whileTrue(turret.sysIdDynamic(Direction.kForward));
-        debugController.povRight().whileTrue(turret.sysIdDynamic(Direction.kReverse));
-        debugController.povDown().whileTrue(turret.sysIdQuasistatic(Direction.kForward));
-        debugController.povLeft().whileTrue(turret.sysIdQuasistatic(Direction.kReverse));
+        debugController.povUp().whileTrue(shooter.sysIdDynamic(Direction.kForward));
+        debugController.povRight().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
+        debugController.povDown().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
+        debugController.povLeft().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
 
-
-        debugController.rightTrigger().whileTrue(Commands.run(() -> spindexer.setSpindexerVolts(8), spindexer));
+        debugController.rightTrigger().whileTrue(Commands.run(() -> spindexer.setSpindexerVolts(10), spindexer));
         debugController.rightTrigger().whileTrue(Commands.run(() -> kicker.setKickerVolts(12), kicker));
     }
 

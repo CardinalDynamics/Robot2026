@@ -30,11 +30,11 @@ public class SpindexerSubsystem extends SubsystemBase {
     VoltageOut voltageOutReq = new VoltageOut(0).withEnableFOC(true);
     
     public SpindexerSubsystem() {
-        spindexerMotor = new TalonFX(IndexerConstants.spindexerMotorCANID, Constants.canivoreBus);
+        spindexerMotor = new TalonFX(IndexerConstants.spindexerMotorCANID, Constants.rioBus);
 
         // Config settings for the x60
         motorConfig = new TalonFXConfiguration();
-        motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
         motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         motorConfig.CurrentLimits.SupplyCurrentLimit = 40;

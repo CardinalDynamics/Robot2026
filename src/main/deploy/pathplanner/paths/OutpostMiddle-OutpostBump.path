@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.650033333333335,
-        "y": 3.2262111111111107
+        "x": 8.562333333333333,
+        "y": 2.894899999999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.661491324461487,
-        "y": 4.7047330552247555
+        "x": 7.573791324461485,
+        "y": 4.373421944113645
       },
       "isLocked": false,
       "linkedName": "OutpostMiddle"
@@ -72,8 +72,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 4.7,
+    "maxVelocity": 4.5,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

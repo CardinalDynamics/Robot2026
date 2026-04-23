@@ -45,7 +45,7 @@ public class HoodSubsystem extends SubsystemBase {
     );
     
     public HoodSubsystem() {
-        hoodMotor = new TalonFX(HoodConstants.hoodMotorCANID, Constants.canivoreBus);
+        hoodMotor = new TalonFX(HoodConstants.hoodMotorCANID, Constants.rioBus);
 
         // Config settings for the x44
         motorConfig = new TalonFXConfiguration();

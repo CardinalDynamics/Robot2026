@@ -20,7 +20,7 @@ public final class HoodConstants {
 
     public static final double hoodOffset = 17.535;
 
-    public static final double hoodMaxLimit = 4 / gearRatio * 360.0 + 17.535;
+    public static final double hoodMaxLimit = 37.5;
     public static final double hoodMinLimit = 17.535;
 
     public static final double hoodStowSetpoint = 20.0;

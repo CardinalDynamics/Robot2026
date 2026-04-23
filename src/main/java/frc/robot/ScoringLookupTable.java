@@ -31,13 +31,13 @@ public class ScoringLookupTable {
         // table.put(6.59, new ShooterParameters(34.0, 4100, 1.266));
         // table.put(9.18, new ShooterParameters(36.0, 5850, 1.4));
 
-        table.put(1.7113, new ShooterParameters(18.0, 2450, .86));
-        table.put(2.443, new ShooterParameters(20.0, 2850, 1.166));
-        table.put(3.65, new ShooterParameters(24.0, 3150, 1.35));
-        table.put(4.24, new ShooterParameters(27.0, 3350, 1.266));
-        table.put(5.479, new ShooterParameters(30.0, 3650, 1.4));
-        table.put(6.59, new ShooterParameters(34.0, 4050, 1.266));
-        table.put(9.18, new ShooterParameters(36.0, 5900, 1.4));
+        table.put(1.7113, new ShooterParameters(18.0, 2400, .86));
+        table.put(2.443, new ShooterParameters(20.0, 2650, 1.166));
+        table.put(3.65, new ShooterParameters(24.0, 2950, 1.35));
+        table.put(4.18, new ShooterParameters(26.0, 3150, 1.266));
+        table.put(5.479, new ShooterParameters(29.0, 3450, 1.4));
+        table.put(6.7, new ShooterParameters(31.0, 3700, 1.266));
+        // table.put(9.18, new ShooterParameters(36.0, 6900, 1.4));
 
     }
 

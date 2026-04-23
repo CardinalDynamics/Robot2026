@@ -12,10 +12,10 @@ public class PassingLookupTable {
     private static final NavigableMap<Double, ShooterParameters> table = new TreeMap<>();
 
     static {
-        table.put(.5, new ShooterParameters(18.0, 1600, 1.0));
-        table.put(5.0, new ShooterParameters(30.0, 2300, 1.5));
-        table.put(9.0, new ShooterParameters(36.0, 4000, 2.0));
-        table.put(13.0, new ShooterParameters(36.0, 6000, 2.5));
+        table.put(.5, new ShooterParameters(18.0, 1500, .5));
+        table.put(5.0, new ShooterParameters(26.0, 2700, 1.0));
+        table.put(9.0, new ShooterParameters(37.0, 3900, 1.5));
+        table.put(12.0, new ShooterParameters(37.0, 6000, 1.5));
     }
 
     public static ShooterParameters get(double distance) {

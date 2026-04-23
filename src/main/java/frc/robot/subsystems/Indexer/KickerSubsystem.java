@@ -24,7 +24,7 @@ public class KickerSubsystem extends SubsystemBase {
     VoltageOut voltageOutReq = new VoltageOut(0).withEnableFOC(true);
     
     public KickerSubsystem() {
-        kickerMotor = new TalonFX(IndexerConstants.kickerMotorCANID, Constants.canivoreBus);
+        kickerMotor = new TalonFX(IndexerConstants.kickerMotorCANID, Constants.rioBus);
 
         // Config settings for the x60
         motorConfig = new TalonFXConfiguration();
